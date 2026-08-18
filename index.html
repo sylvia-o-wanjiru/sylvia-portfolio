@@ -498,32 +498,6 @@
   document.getElementById('whatsapp-cta').href = "https://wa.me/" + CONTENT.whatsappNumber + "?text=" + encodeURIComponent(CONTENT.whatsappMessage);
   document.getElementById('linkedin-cta').href = CONTENT.linkedinUrl;
 
-  // Build a digital business card (vCard) so scanning the QR code
-  // saves a full contact, not just a link.
-  // Note: N (structured name) comes before FN because several phone
-  // contact apps read N first and ignore FN if N is missing or malformed.
-  // Line endings must be CRLF (\r\n) per the vCard spec, not plain \n.
-  const vCard = [
-    "BEGIN:VCARD",
-    "VERSION:3.0",
-    "N:" + CONTENT.lastName + ";" + CONTENT.firstName + ";" + CONTENT.middleName + ";;",
-    "FN:" + CONTENT.fullName,
-    "TITLE:" + CONTENT.jobTitle,
-    "TEL;TYPE=CELL:" + CONTENT.phone,
-    "EMAIL;TYPE=INTERNET:" + CONTENT.email,
-    "URL:" + CONTENT.linkedinUrl,
-    "END:VCARD"
-  ].join("\r\n");
-  new QRCode(document.getElementById('qrcode-canvas'), {
-    text: vCard,
-    width: 120,
-    height: 120,
-    colorDark: "#1b2430",
-    colorLight: "#eef0ea",
-    correctLevel: QRCode.CorrectLevel.M
-  });
-  document.getElementById('vcard-download').href = "data:text/vcard;charset=utf-8," + encodeURIComponent(vCard);
-
   const certRow = document.getElementById('cert-row');
   CONTENT.certifications.forEach(cert=>{
     const hasLink = cert.url && cert.url.trim() !== "";
@@ -553,6 +527,50 @@
       btn.textContent = open ? 'Hide breakdown ↑' : 'View full breakdown ↓';
     });
   });
+
+  // Digital contact card (vCard) QR code. Wrapped in try/catch and run
+  // last so that if QR generation ever fails, every other button on
+  // the page above still works normally.
+  try {
+    // Note: N (structured name) comes before FN because several phone
+    // contact apps read N first and ignore FN if N is missing or malformed.
+    // Line endings must be CRLF (\r\n) per the vCard spec, not plain \n.
+    const vCard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      "N:" + CONTENT.lastName + ";" + CONTENT.firstName + ";" + CONTENT.middleName + ";;",
+      "FN:" + CONTENT.fullName,
+      "TITLE:" + CONTENT.jobTitle,
+      "TEL;TYPE=CELL:" + CONTENT.phone,
+      "EMAIL;TYPE=INTERNET:" + CONTENT.email,
+      "URL:" + CONTENT.linkedinUrl,
+      "END:VCARD"
+    ].join("\r\n");
+
+    if (typeof QRCode === "undefined") {
+      throw new Error("QRCode library did not load");
+    }
+
+    // Rendered large (220px) because vCard data needs a fairly dense
+    // QR code; at smaller sizes the individual modules become too
+    // small for a phone camera to resolve, and scanning silently fails.
+    new QRCode(document.getElementById('qrcode-canvas'), {
+      text: vCard,
+      width: 220,
+      height: 220,
+      colorDark: "#1b2430",
+      colorLight: "#eef0ea",
+      correctLevel: QRCode.CorrectLevel.L
+    });
+
+    document.getElementById('vcard-download').href = "data:text/vcard;charset=utf-8," + encodeURIComponent(vCard);
+  } catch (err) {
+    console.error("QR code generation failed:", err);
+    const canvas = document.getElementById('qrcode-canvas');
+    if (canvas) {
+      canvas.innerHTML = '<div style="width:180px; font-family:JetBrains Mono,monospace; font-size:.7rem; color:#1b2430; padding:12px;">QR code unavailable right now. Use the download link below instead.</div>';
+    }
+  }
 </script>
 
 </body>
