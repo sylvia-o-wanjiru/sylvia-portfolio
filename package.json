@@ -1,0 +1,23 @@
+{
+  "name": "sylvia-portfolio",
+  "version": "1.0.0",
+  "description": "Sylvia Wanjiru Opiyo's portfolio website showcasing operational excellence and quality leadership",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sylvia-o-wanjiru/sylvia-portfolio.git"
+  },
+  "keywords": ["portfolio", "quality", "operations"],
+  "author": "Sylvia Wanjiru Opiyo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sylvia-o-wanjiru/sylvia-portfolio/issues"
+  },
+  "homepage": "https://github.com/sylvia-o-wanjiru/sylvia-portfolio#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
