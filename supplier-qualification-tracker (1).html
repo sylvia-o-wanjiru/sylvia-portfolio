@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplier Qualification Tracker | Sylvia Wanjiru Opiyo</title>
+<meta name="description" content="Free tool: a lightweight PPAP-inspired supplier qualification tracker, built for teams that need to move fast without losing track of the specs that matter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2430;
+    --paper:#eef0ea;
+    --paper-alt:#e2e6dc;
+    --panel:#f7f8f4;
+    --resolved:#3f7a5c;
+    --amber:#c9a227;
+    --flag:#c1583a;
+    --muted:#5a6470;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; font-size:18px;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Work Sans',sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:600; margin:0; color:var(--ink); letter-spacing:-.01em;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.1em;
+    font-size:.7rem; color:var(--muted); display:flex; align-items:center; gap:.5em;
+  }
+  .eyebrow::before{content:"\00a7"; color:var(--flag);}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+
+  .top-nav{position:sticky; top:0; z-index:50; padding:16px 0; border-bottom:1px solid #c3ccbc; background:var(--panel);}
+  .top-nav .wrap{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;}
+  .nav-btn{
+    font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600;
+    padding:10px 18px; border-radius:999px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:7px; border:1.5px solid; transition:all .15s ease;
+  }
+  .nav-btn-ghost{border-color:#c3ccbc; color:var(--ink); background:var(--paper);}
+  .nav-btn-ghost:hover{border-color:var(--ink); background:var(--paper-alt);}
+  .nav-btn-primary{border-color:var(--resolved); color:#fff; background:var(--resolved);}
+  .nav-btn-primary:hover{background:#356b50; border-color:#356b50;}
+
+  header.hero{padding:56px 0 40px;}
+  .hero h1{font-size:2rem; line-height:1.2; max-width:700px;}
+  .hero p{font-size:1.03rem; color:#333e4a; max-width:660px; margin-top:18px;}
+  .hero p.context{font-size:.92rem; color:var(--muted); margin-top:14px; max-width:660px;}
+  .by-line{font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted); margin-top:22px;}
+  .by-line a{color:var(--resolved); text-decoration:underline;}
+
+  .framework-note{background:var(--panel); border:1px solid #c3ccbc; border-radius:10px; padding:18px 22px; margin-top:28px;}
+  .framework-note p{margin:0; font-size:.86rem; color:#42505a; line-height:1.65;}
+  .framework-note b{color:var(--ink);}
+
+  section{padding:36px 0;}
+  .calc-card{background:var(--panel); border:1px solid #c3ccbc; border-radius:12px; padding:32px;}
+  .calc-card h2{font-size:1.15rem; margin-bottom:4px;}
+  .calc-subhead{font-size:.85rem; color:var(--muted); margin-bottom:22px;}
+
+  .download-block{
+    display:flex; align-items:center; gap:20px; flex-wrap:wrap; background:#e9f3ee;
+    border:2px solid var(--resolved); border-radius:12px; padding:24px 26px;
+  }
+  .download-icon{font-size:2rem; flex-shrink:0;}
+  .download-text{flex:1 1 280px;}
+  .download-text strong{display:block; font-family:'Space Grotesk',sans-serif; font-size:1.05rem; margin-bottom:5px;}
+  .download-text span{font-size:.87rem; color:var(--muted);}
+
+  .setup-steps{margin-top:22px; padding-left:20px; font-size:.9rem; color:#333e4a; line-height:1.9;}
+  .setup-steps li{margin-bottom:4px;}
+
+  .cta-row{display:flex; gap:14px; margin-top:24px; flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.88rem; padding:13px 22px; border-radius:8px;
+    text-decoration:none; display:inline-flex; align-items:center; gap:9px; border:2px solid transparent; cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,0.14); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--resolved); color:#fff; border-color:var(--resolved);}
+  .btn-primary:hover{background:#356b50;}
+  .btn-ghost{border-color:var(--ink); color:var(--ink); background:var(--paper);}
+  .btn-ghost:hover{background:var(--ink); color:var(--paper);}
+
+  .how-it-works{margin-top:44px;}
+  .how-it-works h2{font-size:1.3rem;}
+  .stage-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px;}
+  .stage-card{background:var(--panel); border:1px solid #c3ccbc; border-radius:10px; padding:14px 12px;}
+  .stage-num{font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--resolved); font-weight:700; margin-bottom:6px;}
+  .stage-card h3{font-size:.86rem; margin-bottom:5px;}
+  .stage-card p{font-size:.76rem; color:var(--muted); margin:0; line-height:1.5;}
+
+  .field-row{margin-bottom:18px;}
+  .field-row label{display:block; font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--muted); margin-bottom:8px;}
+  .field-row input, .field-row textarea{
+    width:100%; padding:11px 13px; border:1.5px solid #c3ccbc; border-radius:8px;
+    font-family:'Work Sans',sans-serif; font-size:.96rem; background:var(--paper); color:var(--ink);
+  }
+  .field-row input:focus, .field-row textarea:focus{outline:none; border-color:var(--resolved);}
+
+  .star-rating{display:flex; gap:6px;}
+  .star{background:none; border:none; cursor:pointer; padding:0; font-size:1.8rem; line-height:1; color:#c3ccbc; transition:color .1s ease, transform .1s ease;}
+  .star:hover{transform:scale(1.12);}
+  .star.selected{color:var(--flag);}
+
+  .feedback-status{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.84rem; display:none;}
+  .feedback-status.success{display:block; color:var(--resolved);}
+  .feedback-status.error{display:block; color:var(--flag);}
+  .feedback-status.loading{display:block; color:var(--muted);}
+
+  .public-review-card{background:var(--paper); border:1px solid #c3ccbc; border-radius:10px; padding:18px 20px; margin-bottom:14px;}
+  .public-review-stars{color:var(--flag); font-size:1rem; letter-spacing:2px; margin-bottom:8px;}
+  .public-review-text{font-size:.92rem; color:#333e4a; line-height:1.6; margin:0 0 10px;}
+  .public-review-name{font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--muted);}
+  .fine-print{font-size:.82rem; color:var(--muted); margin-top:14px;}
+
+  footer{padding:48px 0 32px; margin-top:20px; background:var(--ink); color:var(--paper);}
+  .footer-grid{display:grid; grid-template-columns:1.1fr 0.9fr 1.1fr; gap:26px;}
+  .footer-heading{font-family:'JetBrains Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:#9fd8b8; margin-bottom:12px;}
+  .footer-text{font-size:.86rem; color:#c7cfc3; line-height:1.6; margin:0;}
+  .footer-link{display:block; font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--paper); text-decoration:none; margin-bottom:10px;}
+  .footer-link:hover{color:#9fd8b8; text-decoration:underline;}
+  .footer-bottom{margin-top:36px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.12); text-align:center;}
+  .footer-bottom p{margin:0; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:#8a9793;}
+
+  @media (max-width:760px) and (min-width:601px){ .footer-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:600px){
+    .hero h1{font-size:1.65rem;}
+    .calc-card{padding:20px;}
+    .stage-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr; gap:26px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="wrap">
+    <a href="https://sylvia-portfolio-mauve.vercel.app/" class="nav-btn nav-btn-ghost">&larr; Back to portfolio</a>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="https://wa.me/254735085157?text=Hi%20Sylvia%2C%20I%20found%20your%20Supplier%20Qualification%20Tracker%20and%20wanted%20to%20chat." target="_blank" rel="noopener" class="nav-btn nav-btn-ghost">WhatsApp me</a>
+      <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="nav-btn nav-btn-primary">Book a 30-minute chat &rarr;</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Free tool</div>
+    <h1 style="margin-top:10px;">Supplier Qualification Tracker</h1>
+    <p>A lightweight version of PPAP, the Production Part Approval Process manufacturers use to formally prove a supplier's part is ready. Six stages, one visible trail, and an automatic flag when something already approved quietly breaks again.</p>
+    <p class="context">Built for anyone sourcing physical products long-term, whether that's motorcycle parts, leather bags, or toys: fast enough to keep a startup moving, thorough enough to catch what actually matters once real customers get their hands on it.</p>
+    <div class="by-line">A free tool by <a href="https://sylvia-portfolio-mauve.vercel.app/" target="_blank" rel="noopener">Sylvia Wanjiru Opiyo</a>, Operational Excellence &amp; Quality Leader.</div>
+
+    <div class="framework-note">
+      <p><b>The process:</b> agree the spec, get a sample, validate it, prove it holds across several batches, close what's open, sign off. The part most trackers miss: <b>regressions</b>, where something already fixed quietly breaks again.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="calc-card">
+      <h2>Get your tracker</h2>
+      <div class="calc-subhead">Six tabs: Instructions, Specs Register, Milestone Tracker, Batch Log with automatic regression flagging, Collaboration Log, and an Executive Summary.</div>
+
+      <div class="download-block">
+        <div class="download-icon">&#128202;</div>
+        <div class="download-text">
+          <strong>Supplier Qualification Tracker</strong>
+          <span>A real working spreadsheet, built to live in Google Sheets or Excel and get shared back and forth over months.</span>
+        </div>
+        <a href="supplier-tracker-template.xlsx" download class="btn btn-primary">Download template &rarr;</a>
+      </div>
+
+      <ol class="setup-steps">
+        <li>Fill in your specs, then send a copy to your supplier as an Excel file. Most suppliers, especially in mainland China, don't reliably access live Google Sheets links, so sending the file directly is what actually works.</li>
+        <li>They fill in what changed and send it back. You add notes on what's still open and send it again. Same file, every round, one trail neither side can dispute later.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="calc-card">
+      <h2>Need a quick update to share?</h2>
+      <div class="calc-subhead">Export straight from your actual tracker rather than re-entering anything, so what you send is always accurate.</div>
+      <ol class="setup-steps">
+        <li>Open your tracker, go to the Milestone Tracker tab (or any tab you want to share).</li>
+        <li>File &rarr; Print, then set "Print" to the current sheet only.</li>
+        <li>Save as PDF. Send that file over WhatsApp, email, or anywhere else.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="how-it-works">
+      <h2>Why regressions matter more than first failures</h2>
+      <p style="font-size:.94rem; color:#333e4a; margin-top:14px;">A first-time failure is normal, that's what the process is for. A supplier failing something it already fixed usually means there's no real process control, just manual firefighting of whatever was flagged last. That pattern predicts scale problems far better than any single pass rate, which is why the Batch Log flags it automatically.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="how-it-works">
+      <h2>The six stages, explained</h2>
+      <div class="stage-grid">
+        <div class="stage-card"><div class="stage-num">01</div><h3>Spec &amp; design agreement</h3><p>Document the target spec and get explicit agreement from the supplier.</p></div>
+        <div class="stage-card"><div class="stage-num">02</div><h3>Initial sample submitted</h3><p>First article received against that agreed spec.</p></div>
+        <div class="stage-card"><div class="stage-num">03</div><h3>Sample validated</h3><p>Fitment, function, and performance checked against every spec, not just the obvious ones.</p></div>
+        <div class="stage-card"><div class="stage-num">04</div><h3>Process consistency proven</h3><p>Several batches run and hold steady, not just one lucky sample.</p></div>
+        <div class="stage-card"><div class="stage-num">05</div><h3>Open issues resolved</h3><p>Everything flagged along the way is closed out, with evidence.</p></div>
+        <div class="stage-card"><div class="stage-num">06</div><h3>Final approval / sign-off</h3><p>Formally locked in as a standing partner, not just an approved sample.</p></div>
+      </div>
+      <p class="fine-print">This is the same pattern behind a real supplier program that took CKD component scrap from 60% to 0% across six batches. <a href="https://sylvia-portfolio-mauve.vercel.app/#project-supplier" target="_blank" rel="noopener" style="color:var(--resolved);">See how that happened &rarr;</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="calc-card" id="publicReviewsCard">
+      <h2>What people are saying</h2>
+      <div class="calc-subhead" id="publicReviewsSummary">Loading reviews&hellip;</div>
+      <div id="publicReviewsList"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="calc-card">
+      <h2>Was this useful?</h2>
+      <div class="calc-subhead">Rate it, critique it, or tell me what would make it better. Approved reviews may be shown publicly above; nothing goes public without a look first.</div>
+
+      <div class="field-row">
+        <label>Rating</label>
+        <div class="star-rating" id="starRating">
+          <button type="button" class="star" data-value="1">&#9733;</button>
+          <button type="button" class="star" data-value="2">&#9733;</button>
+          <button type="button" class="star" data-value="3">&#9733;</button>
+          <button type="button" class="star" data-value="4">&#9733;</button>
+          <button type="button" class="star" data-value="5">&#9733;</button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label for="reviewerName">Name (optional)</label>
+        <input type="text" id="reviewerName" placeholder="Your name">
+      </div>
+
+      <div class="field-row">
+        <label for="reviewText">Your feedback</label>
+        <textarea id="reviewText" rows="4" placeholder="What worked, what was confusing, what's missing&hellip;"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="submitReview">Send feedback &rarr;</button>
+      <div class="feedback-status" id="feedbackStatus"></div>
+      <div class="fine-print" style="margin-top:14px;">This submits directly, no email app, no page reload. It's genuinely anonymous unless you type your name above.</div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div style="text-align:center; margin-bottom:36px;">
+        <h2 style="color:#fff; font-size:1.3rem; margin-bottom:16px;">Working through a supplier problem right now?</h2>
+        <div class="cta-row" style="justify-content:center;">
+          <a href="https://wa.me/254735085157?text=Hi%20Sylvia%2C%20I%20found%20your%20Supplier%20Qualification%20Tracker%20and%20wanted%20to%20chat." target="_blank" rel="noopener" class="btn btn-ghost" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">WhatsApp me</a>
+          <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" target="_blank" rel="noopener" class="btn btn-primary">Book a 30-minute chat &rarr;</a>
+          <a href="https://sylvia-portfolio-mauve.vercel.app/" target="_blank" rel="noopener" class="btn btn-ghost" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">See the full portfolio</a>
+        </div>
+      </div>
+    </div>
+    <div class="wrap footer-grid">
+      <div class="footer-col">
+        <div class="footer-heading">Sylvia Wanjiru Opiyo</div>
+        <p class="footer-text">Operational Excellence and Quality Leader, building supplier partnerships, quality systems, and free tools like this one alongside client work.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">More from Sylvia</div>
+        <a href="https://sylvia-portfolio-mauve.vercel.app/" class="footer-link" target="_blank" rel="noopener">Full portfolio</a>
+        <a href="https://sylvia-portfolio-mauve.vercel.app/calculator.html" class="footer-link" target="_blank" rel="noopener">Cost of Quality Calculator</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">This tool</div>
+        <p class="footer-text">A directional process aid, not a certification. For regulated or safety-critical parts, a full formal PPAP with your quality team is still the right call.</p>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Sylvia Wanjiru Opiyo</p></div>
+  </footer>
+</div>
+
+
+
+<script>
+  const FEEDBACK_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw78uVHyI8-VeTdFrzreNMU9PN-LS6CtoPUCJCM8VRrni_lR6ahegC27FsxC_UcL4wB/exec';
+  const TOOL_NAME = 'Supplier Qualification Tracker';
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  // Star rating
+  let selectedRating = 0;
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star=>{
+    star.addEventListener('click', ()=>{
+      selectedRating = parseInt(star.dataset.value, 10);
+      stars.forEach(s=>{
+        s.classList.toggle('selected', parseInt(s.dataset.value, 10) <= selectedRating);
+      });
+    });
+  });
+
+  // Feedback submits directly to the same Google Sheet used by the Cost
+  // of Quality Calculator, tagged with this tool's name so the two
+  // stay distinguishable on both the sheet and the public display.
+  document.getElementById('submitReview').addEventListener('click', async ()=>{
+    const submitBtn = document.getElementById('submitReview');
+    const statusEl = document.getElementById('feedbackStatus');
+    const name = document.getElementById('reviewerName').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+
+    if(!text && selectedRating === 0){
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Add a rating or a note before sending, whichever you have time for.';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    statusEl.className = 'feedback-status loading';
+    statusEl.textContent = 'Sending your feedback...';
+
+    try{
+      const response = await fetch(FEEDBACK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          rating: selectedRating > 0 ? (selectedRating + ' / 5') : 'Not rated',
+          name: name || 'Anonymous',
+          feedback: text || '(no written feedback)',
+          tool: TOOL_NAME
+        })
+      });
+
+      if(response.ok){
+        statusEl.className = 'feedback-status success';
+        statusEl.textContent = 'Thanks, that\u2019s sent. Really appreciate it.';
+        document.getElementById('reviewerName').value = '';
+        document.getElementById('reviewText').value = '';
+        selectedRating = 0;
+        stars.forEach(s=>s.classList.remove('selected'));
+        submitBtn.textContent = 'Send feedback \u2192';
+        submitBtn.disabled = false;
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch(err){
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Something went wrong sending that. Please try again in a moment.';
+      submitBtn.textContent = 'Send feedback \u2192';
+      submitBtn.disabled = false;
+    }
+  });
+
+  // Public reviews: fetch all approved rows, show only this tool's.
+  async function loadPublicReviews(){
+    const summaryEl = document.getElementById('publicReviewsSummary');
+    const listEl = document.getElementById('publicReviewsList');
+
+    try{
+      const response = await fetch(FEEDBACK_ENDPOINT);
+      const data = await response.json();
+      const reviews = (data.reviews || []).filter(r => r.tool === TOOL_NAME);
+
+      if(reviews.length === 0){
+        summaryEl.textContent = 'No public reviews yet. Be the first below.';
+        listEl.innerHTML = '';
+        return;
+      }
+
+      const ratings = reviews.map(r => parseFloat(r.rating)).filter(n => !isNaN(n) && n > 0);
+      const avg = ratings.length > 0 ? (ratings.reduce((sum, n) => sum + n, 0) / ratings.length).toFixed(1) : null;
+      const reviewWord = reviews.length === 1 ? 'review' : 'reviews';
+
+      summaryEl.textContent = avg !== null
+        ? avg + ' / 5 average from ' + reviews.length + ' ' + reviewWord
+        : reviews.length + ' ' + reviewWord;
+
+      listEl.innerHTML = reviews.slice().reverse().map(r=>{
+        const ratingNum = Math.round(parseFloat(r.rating)) || 0;
+        const stars = ratingNum > 0 ? '\u2605'.repeat(ratingNum) + '\u2606'.repeat(Math.max(0, 5 - ratingNum)) : '';
+        return '<div class="public-review-card">' +
+          (stars ? '<div class="public-review-stars">' + stars + '</div>' : '') +
+          '<p class="public-review-text">' + escapeHtml(r.feedback) + '</p>' +
+          '<div class="public-review-name">' + escapeHtml(r.name || 'Anonymous') + '</div>' +
+        '</div>';
+      }).join('');
+    } catch(err){
+      summaryEl.textContent = 'Reviews are unavailable right now.';
+      listEl.innerHTML = '';
+    }
+  }
+
+  loadPublicReviews();
+</script>
+
+</body>
+</html>
