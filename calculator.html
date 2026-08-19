@@ -242,8 +242,13 @@
   }
   .field-row textarea:focus{outline:none; border-color:var(--resolved);}
 
+  .feedback-status{margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:.84rem; display:none;}
+  .feedback-status.success{display:block; color:var(--resolved);}
+  .feedback-status.error{display:block; color:var(--flag);}
+  .feedback-status.loading{display:block; color:var(--muted);}
+
   footer{padding:48px 0 32px; margin-top:20px; background:var(--ink); color:var(--paper);}
-  .footer-grid{display:grid; grid-template-columns:1.3fr 1fr 1.3fr; gap:32px;}
+  .footer-grid{display:grid; grid-template-columns:1.1fr 0.9fr 1.1fr 1fr; gap:26px;}
   .footer-heading{font-family:'JetBrains Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:#9fd8b8; margin-bottom:12px;}
   .footer-text{font-size:.86rem; color:#c7cfc3; line-height:1.6; margin:0;}
   .footer-link{display:block; font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--paper); text-decoration:none; margin-bottom:10px;}
@@ -255,6 +260,10 @@
   .footer-bottom p{margin:0; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:#8a9793;}
   footer .company-trigger{color:#9fd8b8;}
   footer .company-trigger:hover{color:var(--flag);}
+
+  @media (max-width:760px) and (min-width:601px){
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
 
   @media (max-width:600px){
     .two-col, .results-grid, .how-it-works .pillars, .footer-grid{grid-template-columns:1fr;}
@@ -491,7 +500,8 @@
       </div>
 
       <button type="button" class="btn btn-primary" id="submitReview">Send feedback &rarr;</button>
-      <div class="fine-print" style="margin-top:14px;">This opens your email app with everything pre-filled. Nothing is stored automatically, but this is not an anonymous form: since it sends from your own email account, your email address will be visible to Sylvia. Leave the name field blank if you'd rather stay unnamed in the message itself.</div>
+      <div class="feedback-status" id="feedbackStatus"></div>
+      <div class="fine-print" style="margin-top:14px;">This submits directly, no email app, no page reload. It's genuinely anonymous unless you type your name above.</div>
     </div>
   </section>
 
@@ -510,6 +520,11 @@
       <div class="footer-col">
         <div class="footer-heading">This tool</div>
         <p class="footer-text">Built on the <span class="company-popover"><button type="button" class="company-trigger">ASQ</button><span class="popover-card" role="tooltip"><span class="popover-text">The American Society for Quality (ASQ) is a global professional association for quality management. It publishes widely used standards and resources, including the Cost of Quality framework this tool is built on.</span><a href="https://asq.org/quality-resources/cost-of-quality" target="_blank" rel="noopener" class="popover-link">Visit site &rarr;</a></span></span> Prevention-Appraisal-Failure model. More free tools are on the way, including a Supplier Qualification Framework.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">Save and share</div>
+        <a href="#" class="footer-link" id="downloadPageLink">Download this tool</a>
+        <p class="footer-text">Bookmark this page directly, or ask about embedding it on your own site.</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -800,6 +815,23 @@
     input.addEventListener('wheel', ()=>{ input.blur(); });
   });
 
+  // Lets a visitor download a standalone copy of this exact page, so
+  // they can use it offline, save it locally, or pass it along without
+  // needing to come back to the live link.
+  document.getElementById('downloadPageLink').addEventListener('click', (e)=>{
+    e.preventDefault();
+    const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cost-of-quality-calculator.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
   // ASQ reference popover: hover to preview, tap to toggle on mobile,
   // positioned via JS with position:fixed so it can't get clipped by
   // any parent's overflow, and flips below the trigger if there isn't
@@ -874,27 +906,68 @@
     });
   });
 
-  // Feedback goes out as a pre-filled email. No backend, no data stored
-  // anywhere; it only sends if the visitor actually hits send in their
-  // own email app.
-  document.getElementById('submitReview').addEventListener('click', ()=>{
-    const name = document.getElementById('reviewerName').value.trim() || 'Anonymous';
+  // Feedback submits directly from the page into a Google Sheet, via a
+  // Google Apps Script "web app" acting as the bridge. No email app, no
+  // page reload, no friction, and the data lives in Sylvia's own Drive
+  // rather than a third-party service.
+  //
+  // Setup: create a Google Sheet, add a script under Extensions > Apps
+  // Script (see the doPost code provided separately), deploy it as a
+  // Web App with access set to "Anyone," and paste the resulting URL
+  // below in place of the placeholder.
+  //
+  // Sent as text/plain (not application/json) on purpose: browsers only
+  // skip their CORS preflight check for "simple" requests, and Apps
+  // Script doesn't handle that preflight well. Apps Script still parses
+  // the body as JSON on its end regardless of the header used to send it.
+  const FEEDBACK_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw78uVHyI8-VeTdFrzreNMU9PN-LS6CtoPUCJCM8VRrni_lR6ahegC27FsxC_UcL4wB/exec';
+
+  document.getElementById('submitReview').addEventListener('click', async ()=>{
+    const submitBtn = document.getElementById('submitReview');
+    const statusEl = document.getElementById('feedbackStatus');
+    const name = document.getElementById('reviewerName').value.trim();
     const text = document.getElementById('reviewText').value.trim();
-    const ratingText = selectedRating > 0 ? (selectedRating + ' / 5 stars') : 'Not rated';
 
     if(!text && selectedRating === 0){
-      alert('Add a rating or a note before sending \u2014 whichever you have time for.');
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Add a rating or a note before sending, whichever you have time for.';
       return;
     }
 
-    const subject = 'Feedback on the Cost of Quality Calculator';
-    const body =
-      'Rating: ' + ratingText + '\\n' +
-      'From: ' + name + '\\n\\n' +
-      'Feedback:\\n' + (text || '(no written feedback)');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    statusEl.className = 'feedback-status loading';
+    statusEl.textContent = 'Sending your feedback...';
 
-    window.location.href = 'mailto:sylvia.o.wanjiru@gmail.com?subject=' +
-      encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    try{
+      const response = await fetch(FEEDBACK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          rating: selectedRating > 0 ? (selectedRating + ' / 5') : 'Not rated',
+          name: name || 'Anonymous',
+          feedback: text || '(no written feedback)'
+        })
+      });
+
+      if(response.ok){
+        statusEl.className = 'feedback-status success';
+        statusEl.textContent = 'Thanks, that\u2019s sent. Really appreciate it.';
+        document.getElementById('reviewerName').value = '';
+        document.getElementById('reviewText').value = '';
+        selectedRating = 0;
+        stars.forEach(s=>s.classList.remove('selected'));
+        submitBtn.textContent = 'Send feedback \u2192';
+        submitBtn.disabled = false;
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch(err){
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Something went wrong sending that. Please try again in a moment.';
+      submitBtn.textContent = 'Send feedback \u2192';
+      submitBtn.disabled = false;
+    }
   });
 </script>
 
