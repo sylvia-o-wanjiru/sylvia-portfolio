@@ -96,18 +96,27 @@
   .two-col{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
 
   .unlock-prompt{
-    margin-top:8px; background:#e9f3ee; border:1.5px solid var(--resolved); border-radius:10px;
-    padding:18px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+    margin-top:24px; background:#e9f3ee; border:2px solid var(--resolved); border-radius:12px;
+    padding:22px 24px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    animation:unlockGlow 2.4s ease-in-out infinite;
   }
-  .unlock-prompt-text strong{display:block; font-family:'Space Grotesk',sans-serif; font-size:.95rem; color:var(--ink); margin-bottom:3px;}
-  .unlock-prompt-text span{display:block; font-size:.84rem; color:var(--muted); max-width:420px;}
+  @keyframes unlockGlow{
+    0%, 100% { box-shadow:0 0 0 0 rgba(63,122,92,0.25); }
+    50% { box-shadow:0 0 0 10px rgba(63,122,92,0); }
+  }
+  .unlock-prompt.opened{animation:none;}
+  .unlock-icon{font-size:1.8rem; flex-shrink:0; line-height:1;}
+  .unlock-prompt-text{flex:1 1 260px;}
+  .unlock-prompt-text strong{display:block; font-family:'Space Grotesk',sans-serif; font-size:1.05rem; color:var(--ink); margin-bottom:5px; line-height:1.4;}
+  .unlock-prompt-text strong span{color:var(--flag);}
+  .unlock-prompt-text .unlock-desc{display:block; font-size:.87rem; color:var(--muted); max-width:440px; margin-top:5px;}
   .unlock-btn{
-    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.82rem; cursor:pointer;
-    color:#fff; background:var(--resolved); border:none; border-radius:8px; padding:12px 20px;
-    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.86rem; cursor:pointer;
+    color:#fff; background:var(--resolved); border:none; border-radius:8px; padding:14px 24px;
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap; flex-shrink:0;
     box-shadow:0 5px 14px rgba(63,122,92,0.3); transition:transform .15s ease, box-shadow .15s ease;
   }
-  .unlock-btn:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(63,122,92,0.4); background:#356b50;}
+  .unlock-btn:hover{transform:translateY(-2px) scale(1.03); box-shadow:0 8px 18px rgba(63,122,92,0.4); background:#356b50;}
 
   .detail-section{
     max-height:0; overflow:hidden; transition:max-height .3s ease;
@@ -121,6 +130,12 @@
   .category-label::before{content:"»"; color:var(--resolved);}
 
   .results{margin-top:8px; padding-top:28px; border-top:1px dashed #c3ccbc;}
+  .results-empty-state{
+    margin-top:8px; padding:32px 20px; border:1.5px dashed #c3ccbc; border-radius:10px;
+    text-align:center; background:var(--paper);
+  }
+  .results-empty-icon{font-size:1.8rem; opacity:.5; margin-bottom:10px;}
+  .results-empty-state p{margin:0; font-size:.86rem; color:var(--muted); max-width:320px; margin-left:auto; margin-right:auto; line-height:1.55;}
   .results-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;}
   .result-card{background:var(--paper); border-radius:10px; padding:20px; border:1px solid #c3ccbc;}
   .result-card .lbl{font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
@@ -130,6 +145,10 @@
   .result-card.savings .val{color:var(--resolved);}
 
   .coq-breakdown{margin-top:20px;}
+  .detail-empty-message{
+    margin-top:20px; padding:16px 18px; background:var(--paper); border:1.5px dashed var(--muted);
+    border-radius:10px; font-size:.86rem; color:var(--muted); text-align:center;
+  }
   .coq-breakdown .group-title{font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:10px;}
   .coq-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #dfe3d9; font-size:.9rem;}
   .coq-row:last-child{border-bottom:none;}
@@ -139,6 +158,23 @@
     background:var(--ink); color:var(--paper); border-radius:10px; padding:20px 22px; margin-top:6px;
     display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
   }
+  .scenario-toggle-row{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;}
+  .scenario-toggle-title{display:block; font-family:'Space Grotesk',sans-serif; font-size:1rem; color:var(--ink); margin-bottom:4px;}
+  .scenario-toggle-desc{display:block; font-size:.85rem; color:var(--muted); max-width:420px;}
+  .scenario-table{width:100%; border-collapse:collapse; font-size:.86rem; min-width:420px;}
+  .scenario-table th{
+    text-align:left; font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid #c3ccbc;
+  }
+  .scenario-table td{padding:10px; border-bottom:1px solid #dfe3d9;}
+  .scenario-table td.amt{font-family:'Space Grotesk',sans-serif; font-weight:600;}
+  .scenario-row-actions{display:flex; gap:8px;}
+  .scenario-action-btn{
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; cursor:pointer; background:none; border:none;
+    text-decoration:underline; padding:0;
+  }
+  .scenario-action-btn.load{color:var(--resolved);}
+  .scenario-action-btn.delete{color:var(--flag);}
   .coq-total .lbl{font-family:'JetBrains Mono',monospace; font-size:.78rem; color:#c7cfc3;}
   .coq-total .val{font-family:'Space Grotesk',sans-serif; font-size:1.7rem; font-weight:700; color:var(--paper);}
 
@@ -160,9 +196,8 @@
     font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:700; color:var(--ink); white-space:nowrap;
   }
 
-  .proof-note{background:var(--ink); color:var(--paper); border-radius:10px; padding:22px 24px; margin-top:22px;}
-  .proof-note p{margin:0; font-size:.92rem; color:#dfe3d9; line-height:1.65;}
-  .proof-note a{color:#9fd8b8; text-decoration:underline;}
+  .proof-text{font-size:.88rem; color:#5a6a5e; line-height:1.65; margin-top:22px;}
+  .proof-text a{color:var(--resolved); text-decoration:underline;}
 
   .cta-row{display:flex; gap:14px; margin-top:28px; flex-wrap:wrap;}
   .btn{
@@ -193,11 +228,11 @@
   .dynamic-insight p{font-size:.92rem; color:#dfe3d9; line-height:1.6; margin:0;}
   .dynamic-insight p strong{color:#fff; font-weight:700;}
 
-  .rule-callout{
-    background:#fdf1ec; border:1px solid var(--flag); border-radius:10px; padding:16px 20px; margin-top:20px;
-    font-size:.88rem; color:#42505a;
+  .insight-rule{
+    font-size:.82rem; color:#a8b3a2; line-height:1.55; margin:16px 0 0; padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.15);
   }
-  .rule-callout b{color:var(--flag);}
+  .insight-rule b{color:#9fd8b8;}
   .fine-print{font-size:.82rem; color:var(--muted); margin-top:18px;}
 
   .company-popover{position:relative; display:inline-block;}
@@ -228,6 +263,13 @@
   }
 
   .star-rating{display:flex; gap:6px;}
+
+  .public-review-card{
+    background:var(--paper); border:1px solid #c3ccbc; border-radius:10px; padding:18px 20px; margin-bottom:14px;
+  }
+  .public-review-stars{color:var(--flag); font-size:1rem; letter-spacing:2px; margin-bottom:8px;}
+  .public-review-text{font-size:.92rem; color:#333e4a; line-height:1.6; margin:0 0 10px;}
+  .public-review-name{font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--muted);}
   .star{
     background:none; border:none; cursor:pointer; padding:0;
     font-size:1.8rem; line-height:1; color:#c3ccbc; transition:color .1s ease, transform .1s ease;
@@ -248,6 +290,23 @@
   .feedback-status.loading{display:block; color:var(--muted);}
 
   footer{padding:48px 0 32px; margin-top:20px; background:var(--ink); color:var(--paper);}
+
+  .print-report{display:none;}
+  @media print{
+    body > *:not(#printReport){display:none !important;}
+    .print-report{
+      display:block !important; font-family:'Work Sans',sans-serif; color:#1b2430; padding:20px;
+    }
+    .print-report h1{font-family:'Space Grotesk',sans-serif; font-size:1.6rem; margin-bottom:4px;}
+    .print-report .print-date{font-family:'JetBrains Mono',monospace; font-size:.78rem; color:#5a6470; margin-bottom:24px;}
+    .print-report h2{font-family:'Space Grotesk',sans-serif; font-size:1.15rem; margin:26px 0 10px; border-bottom:2px solid #1b2430; padding-bottom:6px;}
+    .print-report table{width:100%; border-collapse:collapse; margin-bottom:16px; font-size:.9rem;}
+    .print-report td{padding:8px 6px; border-bottom:1px solid #ccc;}
+    .print-report td.label{color:#5a6470;}
+    .print-report td.value{text-align:right; font-weight:600;}
+    .print-report .insight-box{background:#f0f0f0; padding:16px 18px; border-radius:8px; margin:10px 0; font-size:.92rem; line-height:1.6;}
+    .print-report .print-footer{margin-top:30px; font-size:.78rem; color:#5a6470; border-top:1px solid #ccc; padding-top:14px;}
+  }
   .footer-grid{display:grid; grid-template-columns:1.1fr 0.9fr 1.1fr 1fr; gap:26px;}
   .footer-heading{font-family:'JetBrains Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:#9fd8b8; margin-bottom:12px;}
   .footer-text{font-size:.86rem; color:#c7cfc3; line-height:1.6; margin:0;}
@@ -276,6 +335,8 @@
 </head>
 <body>
 
+<div id="printReport" class="print-report"></div>
+
 <nav class="top-nav">
   <div class="wrap">
     <a href="https://sylvia-portfolio-mauve.vercel.app/" class="nav-btn nav-btn-ghost">&larr; Back to portfolio</a>
@@ -299,7 +360,7 @@
   <section>
     <div class="calc-card">
       <h2>Quick estimate</h2>
-      <div class="calc-subhead">Internal failure cost: scrap and rework caught before your product ships.</div>
+      <div class="calc-subhead">Fill in the fields below to estimate your internal failure cost, the scrap and rework caught before your product ships. Your result updates live as you type.</div>
 
       <div class="field-row">
         <label for="currencySearch">Currency</label>
@@ -333,13 +394,35 @@
         </div>
       </div>
 
-      <div class="unlock-prompt">
-        <div class="unlock-prompt-text">
-          <strong>This is only the internal failure slice.</strong>
-          <span>Add appraisal, prevention, and external failure costs to see your full Cost of Quality, and get a tailored read on what to fix first.</span>
-        </div>
-        <button type="button" class="unlock-btn" id="toggleDetail">Show full picture &rarr;</button>
+      <div class="results-empty-state" id="resultsEmptyState">
+        <div class="results-empty-icon">&#128202;</div>
+        <p>Your annual cost estimate will appear here once you fill in units, cost per unit, and your current defect rate.</p>
       </div>
+
+      <div class="results" id="results" style="display:none;">
+        <div class="results-grid">
+          <div class="result-card current">
+            <div class="lbl">Internal failure, current rate</div>
+            <div class="val" id="currentCost">-</div>
+          </div>
+          <div class="result-card">
+            <div class="lbl">Internal failure, at target rate</div>
+            <div class="val" id="targetCost">-</div>
+          </div>
+          <div class="result-card savings">
+            <div class="lbl">Estimated annual savings if you close this gap</div>
+            <div class="val" id="savings">-</div>
+          </div>
+        </div>
+
+        <div class="unlock-prompt" id="unlockPrompt">
+          <div class="unlock-icon">&#128274;</div>
+          <div class="unlock-prompt-text">
+            <strong>You just found <span id="unlockAmount">-</span> in scrap and rework alone.</strong>
+            <span class="unlock-desc">Most operations discover their real Cost of Quality is 2 to 4 times higher once appraisal, prevention, and external failure are counted in. See where you actually stand.</span>
+          </div>
+          <button type="button" class="unlock-btn" id="toggleDetail">Show full picture &rarr;</button>
+        </div>
 
       <div class="detail-section" id="detailSection">
         <div class="detail-inner">
@@ -385,21 +468,7 @@
         </div>
       </div>
 
-      <div class="results" id="results" style="display:none;">
-        <div class="results-grid">
-          <div class="result-card current">
-            <div class="lbl">Internal failure, current rate</div>
-            <div class="val" id="currentCost">-</div>
-          </div>
-          <div class="result-card">
-            <div class="lbl">Internal failure, at target rate</div>
-            <div class="val" id="targetCost">-</div>
-          </div>
-          <div class="result-card savings">
-            <div class="lbl">Estimated annual savings if you close this gap</div>
-            <div class="val" id="savings">-</div>
-          </div>
-        </div>
+        <div class="detail-empty-message" id="detailEmptyMessage" style="display:none;">Fill in at least one field above (appraisal, prevention, or external failure) to see your full breakdown here.</div>
 
         <div class="coq-breakdown" id="coqBreakdown" style="display:none;">
           <div class="coq-group">
@@ -432,15 +501,12 @@
           <div class="dynamic-insight-label">What this number actually tells you</div>
           <h3 id="insightTitle"></h3>
           <p id="insightBody"></p>
+          <p class="insight-rule">A dollar spent on <b>prevention</b> typically saves about $10 in internal failure costs and $100 in external failure costs once a defect reaches the customer.</p>
         </div>
 
-        <div class="rule-callout" id="ruleCallout">
-          Rule of thumb from decades of quality-cost research: a dollar spent on <b>prevention</b> typically saves about $10 in internal failure costs and $100 in external failure costs once a defect reaches the customer.
-        </div>
+        <p class="proof-text">Closing a gap like this is exactly the kind of problem behind the numbers on my portfolio, including a supplier program that took scrap from 60% to 0% and a compliance system that took an operation from 46% to 83%. <a href="https://sylvia-portfolio-mauve.vercel.app/#project-supplier" target="_blank" rel="noopener">See how that happened &rarr;</a></p>
 
-        <div class="proof-note">
-          <p>Closing a gap like this is exactly the kind of problem behind the numbers on my portfolio, including a supplier program that took scrap from 60% to 0% and a compliance system that took an operation from 46% to 83%. <a href="https://sylvia-portfolio-mauve.vercel.app/#project-supplier" target="_blank" rel="noopener">See how that happened &rarr;</a></p>
-        </div>
+        <button type="button" class="btn btn-ghost" id="downloadReportBtn" style="width:100%; justify-content:center; margin-top:4px;">Download this report &rarr;</button>
 
         <div class="cta-row">
           <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="btn btn-primary" target="_blank" rel="noopener">Book a 30-minute chat &rarr;</a>
@@ -474,9 +540,69 @@
   </section>
 
   <section>
+    <div class="calc-card" id="scenarioCard">
+      <div class="scenario-toggle-row">
+        <div>
+          <strong class="scenario-toggle-title">Running more than one product line or station?</strong>
+          <span class="scenario-toggle-desc">Save each line's numbers separately, then see them side by side with one combined total, instead of one misleading blended average.</span>
+        </div>
+        <button type="button" class="btn btn-ghost" id="toggleScenarioSection" style="flex-shrink:0;">Compare lines &rarr;</button>
+      </div>
+
+      <div class="detail-section" id="scenarioSection">
+        <div class="detail-inner">
+          <div class="calc-subhead" style="margin-top:0;">Calculate one line above, save it below, then switch inputs and calculate the next one.</div>
+
+          <div class="field-row">
+            <label for="scenarioName">Name this line or station</label>
+            <input type="text" id="scenarioName" placeholder="e.g. Line A, Frame Assembly, Night Shift">
+          </div>
+
+          <button type="button" class="unlock-btn" id="saveScenario" style="width:100%; justify-content:center;">Save this as a line &rarr;</button>
+          <div class="feedback-status" id="scenarioStatus"></div>
+
+          <div id="scenarioTableWrap" style="display:none; margin-top:26px;">
+            <div class="category-label">Saved lines</div>
+            <div style="overflow-x:auto;">
+              <table class="scenario-table" id="scenarioTable">
+                <thead>
+                  <tr>
+                    <th>Line</th>
+                    <th>Internal failure</th>
+                    <th>Total COQ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="scenarioTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="coq-total" style="margin-top:16px;">
+              <span class="lbl">Plant-wide total (all saved lines)</span>
+              <span class="val" id="scenarioGrandTotal">-</span>
+            </div>
+            <p class="fine-print" id="scenarioCurrencyNote"></p>
+
+            <button type="button" class="btn btn-ghost" id="clearScenarios" style="margin-top:14px;">Clear all saved lines</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <div class="calc-card" id="publicReviewsCard">
+      <h2>What people are saying</h2>
+      <div class="calc-subhead" id="publicReviewsSummary">Loading reviews&hellip;</div>
+      <div id="publicReviewsList"></div>
+    </div>
+  </section>
+
+  <section>
     <div class="calc-card">
       <h2>Was this useful?</h2>
-      <div class="calc-subhead">Rate it, critique it, or tell me what would make it better. It goes straight to my inbox.</div>
+      <div class="calc-subhead">Rate it, critique it, or tell me what would make it better. Approved reviews may be shown publicly above; nothing goes public without a look first.</div>
 
       <div class="field-row">
         <label>Rating</label>
@@ -676,11 +802,13 @@
 
   const toggleBtn = document.getElementById('toggleDetail');
   const detailSection = document.getElementById('detailSection');
+  const unlockPrompt = document.getElementById('unlockPrompt');
   toggleBtn.addEventListener('click', ()=>{
     const isOpen = detailSection.classList.toggle('open');
     toggleBtn.textContent = isOpen
       ? 'Hide full breakdown'
       : 'Show full picture \u2192';
+    if(unlockPrompt) unlockPrompt.classList.add('opened');
     calculate();
   });
 
@@ -692,10 +820,12 @@
     const targetRate = parseFloat(document.getElementById('targetRate').value);
 
     const resultsEl = document.getElementById('results');
+    const emptyStateEl = document.getElementById('resultsEmptyState');
 
     const hasEnoughInput = [units, costPerUnit, currentRate].every(v => !isNaN(v) && v >= 0);
     if(!hasEnoughInput){
       resultsEl.style.display = 'none';
+      if(emptyStateEl) emptyStateEl.style.display = 'block';
       return;
     }
 
@@ -711,14 +841,29 @@
     }
 
     document.getElementById('currentCost').textContent = currency + ' ' + formatNumber(internalFailureCurrent);
-    document.getElementById('targetCost').textContent = internalFailureTarget !== null ? (currency + ' ' + formatNumber(internalFailureTarget)) : '\u2014 (add a target rate)';
-    document.getElementById('savings').textContent = savings !== null ? (currency + ' ' + formatNumber(savings)) : '\u2014 (add a target rate)';
+    document.getElementById('targetCost').textContent = internalFailureTarget !== null ? (currency + ' ' + formatNumber(internalFailureTarget)) : 'Add a target rate to see this';
+    document.getElementById('savings').textContent = savings !== null ? (currency + ' ' + formatNumber(savings)) : 'Add a target rate to see this';
 
     resultsEl.style.display = 'block';
+    if(emptyStateEl) emptyStateEl.style.display = 'none';
+
+    const unlockAmountEl = document.getElementById('unlockAmount');
+    if(unlockAmountEl){
+      unlockAmountEl.textContent = currency + ' ' + formatNumber(internalFailureCurrent);
+    }
 
     // Detailed PAF breakdown, only shown once the detail section is open
+    // AND at least one field in it has actually been filled in. Without
+    // this check, opening the section with nothing entered would show a
+    // "full breakdown" of all zeros, which looks like a real result
+    // (no appraisal, no prevention, no external failure) rather than
+    // what it actually is: no data entered yet.
     const coqBreakdown = document.getElementById('coqBreakdown');
-    if(detailSection.classList.contains('open')){
+    const detailEmptyMessage = document.getElementById('detailEmptyMessage');
+    const detailFieldIds = ['qcStaff','qcSalary','otherAppraisal','prevention','externalFailure'];
+    const hasAnyDetailInput = detailFieldIds.some(id => document.getElementById(id).value.trim() !== '');
+
+    if(detailSection.classList.contains('open') && hasAnyDetailInput){
       const qcStaff = parseFloat(document.getElementById('qcStaff').value) || 0;
       const qcSalary = parseFloat(document.getElementById('qcSalary').value) || 0;
       const otherAppraisal = parseFloat(document.getElementById('otherAppraisal').value) || 0;
@@ -751,6 +896,10 @@
       }
 
       coqBreakdown.style.display = 'block';
+      if(detailEmptyMessage) detailEmptyMessage.style.display = 'none';
+    } else if(detailSection.classList.contains('open') && !hasAnyDetailInput){
+      coqBreakdown.style.display = 'none';
+      if(detailEmptyMessage) detailEmptyMessage.style.display = 'block';
     } else {
       coqBreakdown.style.display = 'none';
     }
@@ -763,8 +912,11 @@
     const titleEl = document.getElementById('insightTitle');
     const bodyEl = document.getElementById('insightBody');
 
-    if(!detailSection.classList.contains('open')){
-      // Quick mode only: no appraisal/prevention/external data yet
+    const detailFieldIds = ['qcStaff','qcSalary','otherAppraisal','prevention','externalFailure'];
+    const hasAnyDetailInput = detailFieldIds.some(id => document.getElementById(id).value.trim() !== '');
+
+    if(!detailSection.classList.contains('open') || !hasAnyDetailInput){
+      // Quick mode only: section closed, or open but nothing entered yet
       titleEl.textContent = "This is only the visible slice";
       bodyEl.innerHTML = "The number above is just <strong>internal failure</strong>, what you catch before shipping. It doesn't yet count QC labor, prevention spend, or what happens when a defect reaches a customer. Open the full breakdown above to get a tailored read on what to fix first.";
       nowWhatSection.style.display = 'block';
@@ -968,6 +1120,310 @@
       submitBtn.textContent = 'Send feedback \u2192';
       submitBtn.disabled = false;
     }
+  });
+
+  // Multi-line comparison: save the current inputs as a named "scenario"
+  // (a product line, station, or shift), so a factory with several
+  // different production styles can build up a comparable set instead
+  // of forcing one misleading blended average through the calculator.
+  // Saved in the browser's own local storage, so it's private to this
+  // device and persists across visits without needing any account.
+  const SCENARIO_KEY = 'coq_calculator_scenarios';
+
+  function getScenarios(){
+    try{
+      return JSON.parse(localStorage.getItem(SCENARIO_KEY)) || [];
+    } catch(e){
+      return [];
+    }
+  }
+
+  function saveScenarios(scenarios){
+    localStorage.setItem(SCENARIO_KEY, JSON.stringify(scenarios));
+  }
+
+  function collectCurrentInputs(){
+    const ids = ['units','costPerUnit','currentRate','targetRate','qcStaff','qcSalary','otherAppraisal','prevention','externalFailure','revenue'];
+    const values = {};
+    ids.forEach(id=>{ values[id] = document.getElementById(id).value; });
+    values.currency = document.getElementById('currency').value;
+    values.currencyLabel = document.getElementById('currencySearch').value;
+    values.detailOpen = detailSection.classList.contains('open');
+    return values;
+  }
+
+  function computeScenarioResult(values){
+    const units = parseFloat(values.units) || 0;
+    const costPerUnit = parseFloat(values.costPerUnit) || 0;
+    const currentRate = parseFloat(values.currentRate) || 0;
+    const internalFailure = units * (currentRate / 100) * costPerUnit * 12;
+
+    let totalCOQ = null;
+    if(values.detailOpen){
+      const qcStaff = parseFloat(values.qcStaff) || 0;
+      const qcSalary = parseFloat(values.qcSalary) || 0;
+      const otherAppraisal = parseFloat(values.otherAppraisal) || 0;
+      const prevention = parseFloat(values.prevention) || 0;
+      const externalFailure = parseFloat(values.externalFailure) || 0;
+      const appraisal = (qcStaff * qcSalary * 12) + otherAppraisal;
+      totalCOQ = prevention + appraisal + internalFailure + externalFailure;
+    }
+
+    return { internalFailure, totalCOQ };
+  }
+
+  function renderScenarios(){
+    const scenarios = getScenarios();
+    const wrap = document.getElementById('scenarioTableWrap');
+    const tbody = document.getElementById('scenarioTableBody');
+
+    if(scenarios.length === 0){
+      wrap.style.display = 'none';
+      return;
+    }
+
+    wrap.style.display = 'block';
+    tbody.innerHTML = '';
+
+    let sumInternal = 0;
+    let sumCOQ = 0;
+    let anyMissingDetail = false;
+    let anyCurrencyMismatch = false;
+    const firstCurrency = scenarios[0].values.currency;
+
+    scenarios.forEach((scenario, index)=>{
+      if(scenario.values.currency !== firstCurrency) anyCurrencyMismatch = true;
+      sumInternal += scenario.result.internalFailure;
+      if(scenario.result.totalCOQ !== null){
+        sumCOQ += scenario.result.totalCOQ;
+      } else {
+        anyMissingDetail = true;
+      }
+
+      const row = document.createElement('tr');
+      row.innerHTML =
+        '<td>' + scenario.name + '</td>' +
+        '<td class="amt">' + scenario.values.currency + ' ' + formatNumber(scenario.result.internalFailure) + '</td>' +
+        '<td class="amt">' + (scenario.result.totalCOQ !== null ? (scenario.values.currency + ' ' + formatNumber(scenario.result.totalCOQ)) : '-') + '</td>' +
+        '<td><div class="scenario-row-actions">' +
+          '<button type="button" class="scenario-action-btn load" data-index="' + index + '">Load</button>' +
+          '<button type="button" class="scenario-action-btn delete" data-index="' + index + '">Delete</button>' +
+        '</div></td>';
+      tbody.appendChild(row);
+    });
+
+    document.getElementById('scenarioGrandTotal').textContent =
+      firstCurrency + ' ' + formatNumber(sumCOQ > 0 ? sumCOQ : sumInternal);
+
+    const noteParts = [];
+    if(anyMissingDetail){
+      noteParts.push('Total COQ only includes lines where the full breakdown was added; others fall back to internal failure only.');
+    }
+    if(anyCurrencyMismatch){
+      noteParts.push('Some lines were saved in different currencies; the total above does not convert between them.');
+    }
+    document.getElementById('scenarioCurrencyNote').textContent = noteParts.join(' ');
+  }
+
+  const scenarioToggleBtn = document.getElementById('toggleScenarioSection');
+  const scenarioSection = document.getElementById('scenarioSection');
+  scenarioToggleBtn.addEventListener('click', ()=>{
+    const isOpen = scenarioSection.classList.toggle('open');
+    scenarioToggleBtn.textContent = isOpen ? 'Hide comparison' : 'Compare lines \u2192';
+  });
+
+  document.getElementById('saveScenario').addEventListener('click', ()=>{
+    const statusEl = document.getElementById('scenarioStatus');
+    const nameInput = document.getElementById('scenarioName');
+    const name = nameInput.value.trim();
+
+    const units = parseFloat(document.getElementById('units').value);
+    const costPerUnit = parseFloat(document.getElementById('costPerUnit').value);
+    const currentRate = parseFloat(document.getElementById('currentRate').value);
+
+    if(!name){
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Give this line a name first.';
+      return;
+    }
+    if([units, costPerUnit, currentRate].some(v => isNaN(v) || v < 0)){
+      statusEl.className = 'feedback-status error';
+      statusEl.textContent = 'Fill in units, cost per unit, and current defect rate above before saving.';
+      return;
+    }
+
+    const values = collectCurrentInputs();
+    const result = computeScenarioResult(values);
+    const scenarios = getScenarios();
+    scenarios.push({ name, values, result });
+    saveScenarios(scenarios);
+    renderScenarios();
+
+    statusEl.className = 'feedback-status success';
+    statusEl.textContent = '"' + name + '" saved. Change the inputs above and save your next line whenever you\u2019re ready.';
+    nameInput.value = '';
+  });
+
+  document.getElementById('scenarioTableBody').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.scenario-action-btn');
+    if(!btn) return;
+    const index = parseInt(btn.dataset.index, 10);
+    const scenarios = getScenarios();
+
+    if(btn.classList.contains('delete')){
+      scenarios.splice(index, 1);
+      saveScenarios(scenarios);
+      renderScenarios();
+      return;
+    }
+
+    if(btn.classList.contains('load')){
+      const values = scenarios[index].values;
+      ['units','costPerUnit','currentRate','targetRate','qcStaff','qcSalary','otherAppraisal','prevention','externalFailure','revenue'].forEach(id=>{
+        document.getElementById(id).value = values[id] || '';
+      });
+      document.getElementById('currency').value = values.currency;
+      document.getElementById('currencySearch').value = values.currencyLabel;
+      if(values.detailOpen && !detailSection.classList.contains('open')){
+        detailSection.classList.add('open');
+        toggleBtn.textContent = 'Hide full breakdown';
+      } else if(!values.detailOpen && detailSection.classList.contains('open')){
+        detailSection.classList.remove('open');
+        toggleBtn.textContent = 'Show full picture \u2192';
+      }
+      calculate();
+      document.getElementById('scenarioCard').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  });
+
+  document.getElementById('clearScenarios').addEventListener('click', ()=>{
+    if(confirm('Remove all saved lines? This cannot be undone.')){
+      saveScenarios([]);
+      renderScenarios();
+    }
+  });
+
+  renderScenarios();
+
+  // Public reviews: fetch only the approved rows from the same Sheet and
+  // display them. All user-submitted text is escaped before insertion,
+  // since rendering arbitrary visitor text as raw HTML would be an XSS
+  // risk even with moderation in place (moderation catches inappropriate
+  // content, not necessarily hidden markup).
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  async function loadPublicReviews(){
+    const summaryEl = document.getElementById('publicReviewsSummary');
+    const listEl = document.getElementById('publicReviewsList');
+
+    try{
+      const response = await fetch(FEEDBACK_ENDPOINT);
+      const data = await response.json();
+      const reviews = data.reviews || [];
+
+      if(reviews.length === 0){
+        summaryEl.textContent = 'No public reviews yet. Be the first below.';
+        listEl.innerHTML = '';
+        return;
+      }
+
+      const ratings = reviews
+        .map(r => parseFloat(r.rating))
+        .filter(n => !isNaN(n) && n > 0);
+      const avg = ratings.length > 0
+        ? (ratings.reduce((sum, n) => sum + n, 0) / ratings.length).toFixed(1)
+        : null;
+      const reviewWord = reviews.length === 1 ? 'review' : 'reviews';
+
+      summaryEl.textContent = avg !== null
+        ? avg + ' / 5 average from ' + reviews.length + ' ' + reviewWord
+        : reviews.length + ' ' + reviewWord;
+
+      listEl.innerHTML = reviews.slice().reverse().map(r=>{
+        const ratingNum = Math.round(parseFloat(r.rating)) || 0;
+        const stars = ratingNum > 0
+          ? '\u2605'.repeat(ratingNum) + '\u2606'.repeat(Math.max(0, 5 - ratingNum))
+          : '';
+        return '<div class="public-review-card">' +
+          (stars ? '<div class="public-review-stars">' + stars + '</div>' : '') +
+          '<p class="public-review-text">' + escapeHtml(r.feedback) + '</p>' +
+          '<div class="public-review-name">' + escapeHtml(r.name || 'Anonymous') + '</div>' +
+        '</div>';
+      }).join('');
+    } catch(err){
+      summaryEl.textContent = 'Reviews are unavailable right now.';
+      listEl.innerHTML = '';
+    }
+  }
+
+  loadPublicReviews();
+
+  // "Download this report": builds a clean, print-only summary of the
+  // current numbers plus the personalized insight, then opens the
+  // browser's native print dialog. Choosing "Save as PDF" there gives
+  // the visitor a real, portable file, with no external library needed.
+  document.getElementById('downloadReportBtn').addEventListener('click', ()=>{
+    const currency = document.getElementById('currency').value;
+    const units = document.getElementById('units').value;
+    const costPerUnit = document.getElementById('costPerUnit').value;
+    const currentRate = document.getElementById('currentRate').value;
+    const targetRate = document.getElementById('targetRate').value;
+    const currentCost = document.getElementById('currentCost').textContent;
+    const targetCost = document.getElementById('targetCost').textContent;
+    const savings = document.getElementById('savings').textContent;
+
+    const detailFieldIds = ['qcStaff','qcSalary','otherAppraisal','prevention','externalFailure'];
+    const hasAnyDetailInput = detailFieldIds.some(id => document.getElementById(id).value.trim() !== '');
+    const showFullBreakdown = detailSection.classList.contains('open') && hasAnyDetailInput;
+
+    const insightTitle = document.getElementById('insightTitle').textContent;
+    const insightBody = document.getElementById('insightBody').innerHTML;
+
+    let breakdownRows = '';
+    if(showFullBreakdown){
+      breakdownRows =
+        '<h2>Full Cost of Quality breakdown</h2>' +
+        '<table>' +
+        '<tr><td class="label">Prevention</td><td class="value">' + escapeHtml(document.getElementById('preventionVal').textContent) + '</td></tr>' +
+        '<tr><td class="label">Appraisal</td><td class="value">' + escapeHtml(document.getElementById('appraisalVal').textContent) + '</td></tr>' +
+        '<tr><td class="label">Internal failure</td><td class="value">' + escapeHtml(document.getElementById('internalVal').textContent) + '</td></tr>' +
+        '<tr><td class="label">External failure</td><td class="value">' + escapeHtml(document.getElementById('externalVal').textContent) + '</td></tr>' +
+        '<tr><td class="label"><b>Total Cost of Quality</b></td><td class="value"><b>' + escapeHtml(document.getElementById('totalCOQ').textContent) + '</b></td></tr>' +
+        '</table>';
+    }
+
+    const reportHtml =
+      '<h1>Cost of Quality Report</h1>' +
+      '<div class="print-date">Generated ' + new Date().toLocaleDateString() + '</div>' +
+
+      '<h2>Inputs used</h2>' +
+      '<table>' +
+        '<tr><td class="label">Units produced per month</td><td class="value">' + escapeHtml(units || '-') + '</td></tr>' +
+        '<tr><td class="label">Cost per defective unit</td><td class="value">' + escapeHtml(currency + ' ' + (costPerUnit || '-')) + '</td></tr>' +
+        '<tr><td class="label">Current defect rate</td><td class="value">' + escapeHtml((currentRate || '-') + '%') + '</td></tr>' +
+        '<tr><td class="label">Target defect rate</td><td class="value">' + escapeHtml(targetRate ? (targetRate + '%') : 'Not set') + '</td></tr>' +
+      '</table>' +
+
+      '<h2>Results</h2>' +
+      '<table>' +
+        '<tr><td class="label">Internal failure cost, current rate</td><td class="value">' + escapeHtml(currentCost) + '</td></tr>' +
+        '<tr><td class="label">Internal failure cost, target rate</td><td class="value">' + escapeHtml(targetCost) + '</td></tr>' +
+        '<tr><td class="label">Estimated annual savings</td><td class="value">' + escapeHtml(savings) + '</td></tr>' +
+      '</table>' +
+
+      breakdownRows +
+
+      '<h2>What this means</h2>' +
+      '<div class="insight-box"><b>' + escapeHtml(insightTitle) + '</b><br><br>' + insightBody + '</div>' +
+
+      '<div class="print-footer">Generated using the free Cost of Quality Calculator by Sylvia Wanjiru Opiyo, Operational Excellence &amp; Quality Leader. sylvia-portfolio-mauve.vercel.app</div>';
+
+    document.getElementById('printReport').innerHTML = reportHtml;
+    window.print();
   });
 </script>
 
