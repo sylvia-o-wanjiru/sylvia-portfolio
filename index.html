@@ -47,37 +47,6 @@
   header.hero{padding:88px 0 64px; border-bottom:1px solid #c3ccbc;}
   .hero h1{font-size:2.4rem; line-height:1.08;}
   .role-line{font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--muted); margin-top:6px;}
-  .company-popover{position:relative; display:inline-block;}
-  .company-trigger{
-    background:none; border:none; padding:0; margin:0; cursor:pointer;
-    font:inherit; color:inherit;
-    text-decoration:underline; text-decoration-color:var(--resolved); text-decoration-thickness:1px;
-  }
-  .company-trigger:hover, .company-trigger:focus{color:var(--flag); text-decoration-color:var(--flag);}
-  /* Fixed positioning (not absolute) so the card is placed relative to the
-     viewport via JS, and can never get clipped by a parent's overflow:hidden
-     (several cards on this page, like .project, use overflow:hidden for
-     their rounded corners). Left/top are set inline by JS on open. */
-  .popover-card{
-    position:fixed; left:0; top:0;
-    width:230px; background:var(--ink); color:var(--paper);
-    font-family:'Work Sans',sans-serif; font-size:.8rem; line-height:1.55;
-    padding:14px 16px; border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,0.3);
-    opacity:0; visibility:hidden; pointer-events:none;
-    transition:opacity .15s ease;
-    z-index:500; text-align:left;
-  }
-  .popover-card.open{opacity:1; visibility:visible; pointer-events:auto;}
-  .popover-text{display:block;}
-  .popover-link{
-    display:inline-block; margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:.72rem;
-    color:#9fd8b8; text-decoration:underline;
-  }
-  .popover-link:hover{color:#c3ecd8;}
-  @media (max-width:480px){
-    .popover-card{width:80vw; max-width:230px;}
-  }
-
   .company-link{
     color:inherit; text-decoration:underline;
     text-decoration-color:var(--resolved); text-decoration-thickness:1px;
@@ -139,11 +108,7 @@
 
   .project{border:1px solid #c3ccbc; border-radius:10px; background:var(--panel); margin-bottom:28px; overflow:hidden;}
   .project-teaser{padding:30px 32px; display:flex; justify-content:space-between; gap:24px; align-items:flex-start; flex-wrap:wrap;}
-  .project-teaser .tag{
-    font-family:'JetBrains Mono',monospace; font-size:.74rem; color:var(--flag);
-    letter-spacing:.02em; display:inline-flex; align-items:center; gap:.45em;
-  }
-  .project-teaser .tag::before{content:"»"; color:var(--muted-green);}
+  .project-teaser .tag{font-family:'JetBrains Mono',monospace; font-size:.68rem; text-transform:uppercase; color:var(--flag); letter-spacing:.08em;}
   .project-teaser h3{font-size:1.35rem; margin-top:6px;}
   .project-teaser .meta{font-size:.88rem; line-height:1.65; color:var(--muted); margin-top:14px; max-width:520px;}
   .project-result{text-align:right; flex-shrink:0;}
@@ -298,7 +263,7 @@
     <div class="project" id="project-supplier">
       <div class="project-teaser">
         <div>
-          <div class="tag">Supplier Development · <span class="company-popover"><button type="button" class="company-trigger">GOGO Electric</button><span class="popover-card" role="tooltip"><span class="popover-text">A Ugandan e-mobility company that manufactures lithium-ion batteries and assembles electric motorcycles, backed by one of the largest battery-swapping networks in East Africa.</span><a href="https://gogo.co.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span></div>
+          <div class="tag">Supplier Development · <a href="https://gogo.co.com/" target="_blank" rel="noopener" class="company-link">GOGO Electric</a></div>
           <h3>From 60% scrap to zero: building a CKD supplier partnership from scratch</h3>
           <div class="meta">No qualified supplier existed for the CKD parts we needed: rims, frames, wiring harnesses. Up to 60% of high-value components were being scrapped, 30% of every cargo needed rework, and there was no proven product-market fit for the spec.</div>
           <button class="toggle-btn" data-target="detail-supplier">View full breakdown ↓</button>
@@ -363,7 +328,7 @@
     <div class="project" id="project-systems">
       <div class="project-teaser">
         <div>
-          <div class="tag">Quality Systems &amp; Compliance · <span class="company-popover"><button type="button" class="company-trigger">GOGO Electric</button><span class="popover-card" role="tooltip"><span class="popover-text">A Ugandan e-mobility company that manufactures lithium-ion batteries and assembles electric motorcycles, backed by one of the largest battery-swapping networks in East Africa.</span><a href="https://gogo.co.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span></div>
+          <div class="tag">Quality Systems &amp; Compliance · <a href="https://gogo.co.com/" target="_blank" rel="noopener" class="company-link">GOGO Electric</a></div>
           <h3>Building a compliance backbone the team actually owns</h3>
           <div class="meta">Compliance was reactive and inconsistent, and operational knowledge lived in scattered documents with no version control. The goal wasn't just to fix the gaps. It was to build a system the people running it would actually keep using.</div>
           <button class="toggle-btn" data-target="detail-systems">View full breakdown ↓</button>
@@ -410,6 +375,35 @@
     </div>
   </section>
 
+  <!-- FREE TOOLS -->
+  <section class="alt" id="tools">
+    <div class="section-head">
+      <div class="eyebrow">Free tools</div>
+      <h2>See the numbers behind your own operation</h2>
+    </div>
+
+    <div class="project">
+      <div class="project-teaser">
+        <div>
+          <div class="tag">Free calculator</div>
+          <h3>Cost of Quality Calculator</h3>
+          <div class="meta">Estimate what defects, rework, and QC labor are actually costing your operation each year, using the same ASQ framework behind the case studies above.</div>
+          <a href="calculator.html" class="toggle-btn" style="margin-top:14px; text-decoration:none; display:inline-flex;">Open the calculator &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project" style="opacity:0.6;">
+      <div class="project-teaser">
+        <div>
+          <div class="tag">Coming soon</div>
+          <h3>Supplier Qualification Framework</h3>
+          <div class="meta">A step-by-step framework for turning an unqualified supplier into a reliable one, based on the batch-by-batch approach used in the CKD supplier case study above.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CAPABILITIES -->
   <section>
     <div class="section-head">
@@ -443,8 +437,8 @@
     </div>
     <div class="career-strip">
       <div class="now">Currently</div>
-      <div class="now-role" id="now-role"><b>Quality and Operations Consultant</b>, <span class="company-popover"><button type="button" class="company-trigger">Dodai</button><span class="popover-card" role="tooltip"><span class="popover-text">A Japanese-founded e-mobility startup assembling electric motorcycles locally in Addis Ababa, Ethiopia, with a growing battery-swapping network across the city.</span><a href="https://dodai.co/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Addis Ababa, Ethiopia (Jul 2026 to Present)</div>
-      <div class="prev" id="prev-roles">Previously: <span class="company-popover"><button type="button" class="company-trigger">GOGO Electric</button><span class="popover-card" role="tooltip"><span class="popover-text">A Ugandan e-mobility company that manufactures lithium-ion batteries and assembles electric motorcycles, backed by one of the largest battery-swapping networks in East Africa.</span><a href="https://gogo.co.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Kampala, Uganda · <span class="company-popover"><button type="button" class="company-trigger">Roam</button><span class="popover-card" role="tooltip"><span class="popover-text">A Kenyan electric mobility company that designs and builds electric motorcycles and buses at its Nairobi plant, one of the largest electric vehicle assembly facilities in East Africa.</span><a href="https://www.roam-electric.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Nairobi, Kenya</div>
+      <div class="now-role" id="now-role"><b>Quality and Operations Consultant</b>, <a href="https://dodai.co/" target="_blank" rel="noopener" class="company-link">Dodai</a>, Addis Ababa, Ethiopia (Jul 2026 to Present)</div>
+      <div class="prev" id="prev-roles">Previously: <a href="https://gogo.co.com/" target="_blank" rel="noopener" class="company-link">GOGO Electric</a>, Kampala, Uganda · <a href="https://www.roam-electric.com/" target="_blank" rel="noopener" class="company-link">Roam</a>, Nairobi, Kenya</div>
     </div>
   </section>
 
@@ -505,10 +499,10 @@
     currentFocusLine: "Quality and Operations Consultant at Dodai, since July 2026.",
 
     // Your most recent role, shown in the "Currently" strip
-    currentRoleHTML: '<b>Quality and Operations Consultant</b>, <span class="company-popover"><button type="button" class="company-trigger">Dodai</button><span class="popover-card" role="tooltip"><span class="popover-text">A Japanese-founded e-mobility startup assembling electric motorcycles locally in Addis Ababa, Ethiopia, with a growing battery-swapping network across the city.</span><a href="https://dodai.co/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Addis Ababa, Ethiopia (Jul 2026 to Present)',
+    currentRoleHTML: '<b>Quality and Operations Consultant</b>, <a href="https://dodai.co/" target="_blank" rel="noopener" class="company-link">Dodai</a>, Addis Ababa, Ethiopia (Jul 2026 to Present)',
 
     // Everything before that. Keep it short, one line
-    previousRolesHTML: 'Previously: <span class="company-popover"><button type="button" class="company-trigger">GOGO Electric</button><span class="popover-card" role="tooltip"><span class="popover-text">A Ugandan e-mobility company that manufactures lithium-ion batteries and assembles electric motorcycles, backed by one of the largest battery-swapping networks in East Africa.</span><a href="https://gogo.co.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Kampala, Uganda · <span class="company-popover"><button type="button" class="company-trigger">Roam</button><span class="popover-card" role="tooltip"><span class="popover-text">A Kenyan electric mobility company that designs and builds electric motorcycles and buses at its Nairobi plant, one of the largest electric vehicle assembly facilities in East Africa.</span><a href="https://www.roam-electric.com/" target="_blank" rel="noopener" class="popover-link">Visit site →</a></span></span>, Nairobi, Kenya',
+    previousRolesHTML: 'Previously: <a href="https://gogo.co.com/" target="_blank" rel="noopener" class="company-link">GOGO Electric</a>, Kampala, Uganda · <a href="https://www.roam-electric.com/" target="_blank" rel="noopener" class="company-link">Roam</a>, Nairobi, Kenya',
 
     // Add or remove certifications freely. The row will wrap automatically.
     // Give each one a "url" pointing to the certificate (a PDF, an image,
@@ -604,78 +598,6 @@
       canvas.innerHTML = '<div style="width:180px; font-family:JetBrains Mono,monospace; font-size:.7rem; color:#1b2430; padding:12px;">QR code unavailable right now. Use the download link below instead.</div>';
     }
   }
-
-  // Company name popovers: hover to preview on desktop, tap to toggle on
-  // mobile, click outside to close. Keeps visitors on the page while
-  // still giving them a quick summary of each company.
-  //
-  // Positioned with position:fixed and placed via JS (not CSS
-  // position:absolute) so the card can never get clipped by a parent
-  // element's overflow:hidden, and can flip to appear below the trigger
-  // if there isn't enough room above it (e.g. near the top of the page).
-  function positionPopover(btn, card){
-    const rect = btn.getBoundingClientRect();
-    const gap = 10;
-    const cardWidth = card.offsetWidth || 230;
-    const cardHeight = card.offsetHeight || 80;
-
-    let left = rect.left + (rect.width / 2) - (cardWidth / 2);
-    left = Math.max(12, Math.min(left, window.innerWidth - cardWidth - 12));
-
-    const spaceAbove = rect.top;
-    const placeBelow = spaceAbove < (cardHeight + gap + 12);
-
-    const top = placeBelow ? (rect.bottom + gap) : (rect.top - cardHeight - gap);
-
-    card.style.left = left + 'px';
-    card.style.top = top + 'px';
-  }
-
-  document.querySelectorAll('.company-trigger').forEach(btn=>{
-    const card = btn.nextElementSibling;
-    let closeTimer = null;
-
-    function openCard(){
-      if(closeTimer){ clearTimeout(closeTimer); closeTimer = null; }
-      document.querySelectorAll('.popover-card.open').forEach(c=>{ if(c!==card) c.classList.remove('open'); });
-      card.classList.add('open');
-      positionPopover(btn, card);
-    }
-    function closeCardNow(){ card.classList.remove('open'); }
-    // Small delay before closing on mouse-out, so the cursor has time to
-    // travel from the trigger down into the card itself (e.g. to reach
-    // the "Visit site" link) without the popover disappearing first.
-    function scheduleClose(){
-      if(closeTimer){ clearTimeout(closeTimer); }
-      closeTimer = setTimeout(closeCardNow, 200);
-    }
-
-    btn.addEventListener('mouseenter', openCard);
-    btn.addEventListener('mouseleave', scheduleClose);
-    btn.addEventListener('focus', openCard);
-    btn.addEventListener('blur', scheduleClose);
-
-    // Hovering the card itself (not just the trigger) also keeps it open.
-    card.addEventListener('mouseenter', openCard);
-    card.addEventListener('mouseleave', scheduleClose);
-
-    btn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      card.classList.contains('open') ? closeCardNow() : openCard();
-    });
-  });
-  document.addEventListener('click', (e)=>{
-    if(!e.target.closest('.company-popover')){
-      document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
-    }
-  });
-  window.addEventListener('scroll', ()=>{
-    document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
-  }, { passive: true });
-  window.addEventListener('resize', ()=>{
-    document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
-  });
 </script>
 
 </body>
