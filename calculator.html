@@ -37,7 +37,7 @@
   .eyebrow::before{content:"§"; color:var(--flag);}
   .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
 
-  .top-nav{padding:16px 0; border-bottom:1px solid #c3ccbc; background:var(--panel);}
+  .top-nav{position:sticky; top:0; z-index:50; padding:16px 0; border-bottom:1px solid #c3ccbc; background:var(--panel);}
   .top-nav .wrap{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;}
   .nav-btn{
     font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600;
@@ -340,7 +340,10 @@
 <nav class="top-nav">
   <div class="wrap">
     <a href="https://sylvia-portfolio-mauve.vercel.app/" class="nav-btn nav-btn-ghost">&larr; Back to portfolio</a>
-    <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="nav-btn nav-btn-primary">Book a 30-minute chat &rarr;</a>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="https://wa.me/254735085157?text=Hi%20Sylvia%2C%20I%20found%20your%20Cost%20of%20Quality%20Calculator%20and%20wanted%20to%20chat." target="_blank" rel="noopener" class="nav-btn nav-btn-ghost">WhatsApp me</a>
+      <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="nav-btn nav-btn-primary">Book a 30-minute chat &rarr;</a>
+    </div>
   </div>
 </nav>
 
@@ -632,6 +635,16 @@
   </section>
 
   <footer>
+    <div class="wrap">
+      <div style="text-align:center; margin-bottom:36px;">
+        <h2 style="color:#fff; font-size:1.3rem; margin-bottom:16px;">Working through a quality cost problem right now?</h2>
+        <div class="cta-row" style="justify-content:center;">
+          <a href="https://wa.me/254735085157?text=Hi%20Sylvia%2C%20I%20found%20your%20Cost%20of%20Quality%20Calculator%20and%20wanted%20to%20chat." target="_blank" rel="noopener" class="btn btn-ghost" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">WhatsApp me</a>
+          <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" target="_blank" rel="noopener" class="btn btn-primary">Book a 30-minute chat &rarr;</a>
+          <a href="https://sylvia-portfolio-mauve.vercel.app/" target="_blank" rel="noopener" class="btn btn-ghost" style="background:transparent; color:#fff; border-color:rgba(255,255,255,0.4);">See the full portfolio</a>
+        </div>
+      </div>
+    </div>
     <div class="wrap footer-grid">
       <div class="footer-col">
         <div class="footer-heading">Sylvia Wanjiru Opiyo</div>
@@ -640,12 +653,12 @@
       <div class="footer-col">
         <div class="footer-heading">More from Sylvia</div>
         <a href="https://sylvia-portfolio-mauve.vercel.app/" class="footer-link" target="_blank" rel="noopener">Full portfolio</a>
-        <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="footer-link" target="_blank" rel="noopener">Book a 30-minute chat</a>
+        <a href="https://sylvia-portfolio-mauve.vercel.app/supplier-qualification-tracker.html" class="footer-link" target="_blank" rel="noopener">Supplier Qualification Tracker</a>
         <a href="https://www.linkedin.com/in/sylvia-wanjiru-opiyo" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
       </div>
       <div class="footer-col">
         <div class="footer-heading">This tool</div>
-        <p class="footer-text">Built on the <span class="company-popover"><button type="button" class="company-trigger">ASQ</button><span class="popover-card" role="tooltip"><span class="popover-text">The American Society for Quality (ASQ) is a global professional association for quality management. It publishes widely used standards and resources, including the Cost of Quality framework this tool is built on.</span><a href="https://asq.org/quality-resources/cost-of-quality" target="_blank" rel="noopener" class="popover-link">Visit site &rarr;</a></span></span> Prevention-Appraisal-Failure model. More free tools are on the way, including a Supplier Qualification Framework.</p>
+        <p class="footer-text">Built on the <span class="company-popover"><button type="button" class="company-trigger">ASQ</button><span class="popover-card" role="tooltip"><span class="popover-text">The American Society for Quality (ASQ) is a global professional association for quality management. It publishes widely used standards and resources, including the Cost of Quality framework this tool is built on.</span><a href="https://asq.org/quality-resources/cost-of-quality" target="_blank" rel="noopener" class="popover-link">Visit site &rarr;</a></span></span> Prevention-Appraisal-Failure model.</p>
       </div>
       <div class="footer-col">
         <div class="footer-heading">Save and share</div>
@@ -1098,7 +1111,8 @@
         body: JSON.stringify({
           rating: selectedRating > 0 ? (selectedRating + ' / 5') : 'Not rated',
           name: name || 'Anonymous',
-          feedback: text || '(no written feedback)'
+          feedback: text || '(no written feedback)',
+          tool: 'Cost of Quality Calculator'
         })
       });
 
@@ -1323,7 +1337,7 @@
     try{
       const response = await fetch(FEEDBACK_ENDPOINT);
       const data = await response.json();
-      const reviews = data.reviews || [];
+      const reviews = (data.reviews || []).filter(r => r.tool === 'Cost of Quality Calculator');
 
       if(reviews.length === 0){
         summaryEl.textContent = 'No public reviews yet. Be the first below.';
