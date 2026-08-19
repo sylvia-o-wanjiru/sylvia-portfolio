@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost of Quality Calculator | Sylvia Wanjiru Opiyo</title>
+<meta name="description" content="Free calculator based on the ASQ Prevention-Appraisal-Failure model: see what defects, rework, QC labor, and quality investment are really costing you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b2430;
+    --paper:#eef0ea;
+    --paper-alt:#e2e6dc;
+    --panel:#f7f8f4;
+    --resolved:#3f7a5c;
+    --flag:#c1583a;
+    --muted:#5a6470;
+    --maxw:860px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; font-size:18px;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:600; margin:0; color:var(--ink); letter-spacing:-.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.1em;
+    font-size:.7rem; color:var(--muted); display:flex; align-items:center; gap:.5em;
+  }
+  .eyebrow::before{content:"§"; color:var(--flag);}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+
+  .top-nav{padding:16px 0; border-bottom:1px solid #c3ccbc; background:var(--panel);}
+  .top-nav .wrap{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;}
+  .nav-btn{
+    font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600;
+    padding:10px 18px; border-radius:999px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:7px; border:1.5px solid; transition:all .15s ease;
+  }
+  .nav-btn-ghost{border-color:#c3ccbc; color:var(--ink); background:var(--paper);}
+  .nav-btn-ghost:hover{border-color:var(--ink); background:var(--paper-alt);}
+  .nav-btn-primary{border-color:var(--resolved); color:#fff; background:var(--resolved);}
+  .nav-btn-primary:hover{background:#356b50; border-color:#356b50;}
+
+  header.hero{padding:56px 0 40px;}
+  .hero h1{font-size:2.1rem; line-height:1.2; max-width:700px;}
+  .hero p{font-size:1.05rem; color:#333e4a; max-width:640px; margin-top:18px;}
+  .by-line{font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted); margin-top:22px;}
+  .by-line a{color:var(--resolved); text-decoration:underline;}
+
+  .framework-note{
+    background:var(--panel); border:1px solid #c3ccbc; border-radius:10px; padding:18px 22px; margin-top:28px;
+  }
+  .framework-note p{margin:0; font-size:.86rem; color:#42505a; line-height:1.65;}
+  .framework-note b{color:var(--ink);}
+
+  section{padding:36px 0;}
+
+  .calc-card{background:var(--panel); border:1px solid #c3ccbc; border-radius:12px; padding:32px;}
+  .calc-card h2{font-size:1.15rem; margin-bottom:4px;}
+  .calc-subhead{font-size:.85rem; color:var(--muted); margin-bottom:22px;}
+
+  .field-row{margin-bottom:22px;}
+  .field-row label{
+    display:block; font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--muted);
+    margin-bottom:8px; letter-spacing:.02em;
+  }
+  .field-row input{
+    width:100%; padding:12px 14px; border:1.5px solid #c3ccbc; border-radius:8px;
+    font-family:'Work Sans',sans-serif; font-size:1rem; color:var(--ink); background:var(--paper);
+  }
+  .field-row input:focus{outline:none; border-color:var(--resolved);}
+
+  .currency-combo{position:relative;}
+  .currency-options{
+    position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:40;
+    max-height:260px; overflow-y:auto; background:var(--paper); border:1.5px solid #c3ccbc; border-radius:8px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.15); display:none;
+  }
+  .currency-options.open{display:block;}
+  .currency-option{
+    padding:11px 14px; cursor:pointer; font-size:.92rem; display:flex; justify-content:space-between; gap:10px;
+  }
+  .currency-option:hover, .currency-option.highlighted{background:var(--panel);}
+  .currency-option .code{font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--resolved);}
+  .currency-option .name{color:var(--muted); font-size:.85rem;}
+  .currency-options .no-match{padding:14px; font-size:.85rem; color:var(--muted); text-align:center;}
+  .field-hint{font-size:.78rem; color:var(--muted); margin-top:6px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+
+  .unlock-prompt{
+    margin-top:8px; background:#e9f3ee; border:1.5px solid var(--resolved); border-radius:10px;
+    padding:18px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .unlock-prompt-text strong{display:block; font-family:'Space Grotesk',sans-serif; font-size:.95rem; color:var(--ink); margin-bottom:3px;}
+  .unlock-prompt-text span{display:block; font-size:.84rem; color:var(--muted); max-width:420px;}
+  .unlock-btn{
+    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.82rem; cursor:pointer;
+    color:#fff; background:var(--resolved); border:none; border-radius:8px; padding:12px 20px;
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+    box-shadow:0 5px 14px rgba(63,122,92,0.3); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .unlock-btn:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(63,122,92,0.4); background:#356b50;}
+
+  .detail-section{
+    max-height:0; overflow:hidden; transition:max-height .3s ease;
+  }
+  .detail-section.open{max-height:2200px;}
+  .detail-inner{padding-top:26px; margin-top:26px; border-top:1px dashed #c3ccbc;}
+  .category-label{
+    font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--flag); margin-bottom:14px; display:flex; align-items:center; gap:.4em;
+  }
+  .category-label::before{content:"»"; color:var(--resolved);}
+
+  .results{margin-top:8px; padding-top:28px; border-top:1px dashed #c3ccbc;}
+  .results-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;}
+  .result-card{background:var(--paper); border-radius:10px; padding:20px; border:1px solid #c3ccbc;}
+  .result-card .lbl{font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+  .result-card .val{font-family:'Space Grotesk',sans-serif; font-size:1.6rem; font-weight:700; margin-top:8px;}
+  .result-card.current .val{color:var(--flag);}
+  .result-card.savings{background:#e9f3ee; border-color:var(--resolved); grid-column:1 / -1;}
+  .result-card.savings .val{color:var(--resolved);}
+
+  .coq-breakdown{margin-top:20px;}
+  .coq-breakdown .group-title{font-family:'JetBrains Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:10px;}
+  .coq-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #dfe3d9; font-size:.9rem;}
+  .coq-row:last-child{border-bottom:none;}
+  .coq-row .amt{font-family:'Space Grotesk',sans-serif; font-weight:600;}
+  .coq-group{background:var(--paper); border:1px solid #c3ccbc; border-radius:10px; padding:18px 20px; margin-bottom:14px;}
+  .coq-total{
+    background:var(--ink); color:var(--paper); border-radius:10px; padding:20px 22px; margin-top:6px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .coq-total .lbl{font-family:'JetBrains Mono',monospace; font-size:.78rem; color:#c7cfc3;}
+  .coq-total .val{font-family:'Space Grotesk',sans-serif; font-size:1.7rem; font-weight:700; color:var(--paper);}
+
+  .benchmark{margin-top:22px;}
+  .benchmark .lbl{font-family:'JetBrains Mono',monospace; font-size:.76rem; color:var(--muted); margin-bottom:10px;}
+  .benchmark-bar{
+    position:relative; height:34px; border-radius:6px; overflow:hidden; display:flex;
+    font-family:'JetBrains Mono',monospace; font-size:.62rem; color:#fff;
+  }
+  .benchmark-bar .seg{display:flex; align-items:center; justify-content:center; padding:0 4px; text-align:center;}
+  .seg-worldclass{background:var(--resolved); flex:5;}
+  .seg-typical{background:#c9a227; flex:15;}
+  .seg-struggling{background:var(--flag); flex:20;}
+  .benchmark-marker{
+    position:absolute; top:-6px; width:2px; height:46px; background:var(--ink);
+  }
+  .benchmark-marker::after{
+    content:attr(data-label); position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:700; color:var(--ink); white-space:nowrap;
+  }
+
+  .proof-note{background:var(--ink); color:var(--paper); border-radius:10px; padding:22px 24px; margin-top:22px;}
+  .proof-note p{margin:0; font-size:.92rem; color:#dfe3d9; line-height:1.65;}
+  .proof-note a{color:#9fd8b8; text-decoration:underline;}
+
+  .cta-row{display:flex; gap:14px; margin-top:28px; flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:.9rem; padding:15px 26px; border-radius:8px;
+    text-decoration:none; display:inline-flex; align-items:center; gap:9px; border:2px solid transparent; cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,0.24);}
+  .btn-primary{background:var(--resolved); color:#fff; border-color:var(--resolved);}
+  .btn-primary:hover{background:#356b50;}
+  .btn-ghost{border-color:var(--ink); color:var(--ink); background:var(--paper);}
+  .btn-ghost:hover{background:var(--ink); color:var(--paper);}
+
+  .how-it-works{margin-top:44px;}
+  .how-it-works h2{font-size:1.3rem;}
+  .how-it-works .pillars{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:18px;}
+  .pillar{background:var(--panel); border:1px solid #c3ccbc; border-radius:10px; padding:16px 18px;}
+  .pillar h3{font-size:.92rem; margin-bottom:6px;}
+  .pillar p{font-size:.84rem; color:var(--muted); margin:0;}
+  .dynamic-insight{
+    background:var(--ink); color:var(--paper); border-radius:12px; padding:24px 26px; margin-top:22px;
+  }
+  .dynamic-insight-label{
+    font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em;
+    color:#9fd8b8; margin-bottom:10px;
+  }
+  .dynamic-insight h3{font-size:1.1rem; color:#fff; margin-bottom:8px;}
+  .dynamic-insight p{font-size:.92rem; color:#dfe3d9; line-height:1.6; margin:0;}
+  .dynamic-insight p strong{color:#fff; font-weight:700;}
+
+  .rule-callout{
+    background:#fdf1ec; border:1px solid var(--flag); border-radius:10px; padding:16px 20px; margin-top:20px;
+    font-size:.88rem; color:#42505a;
+  }
+  .rule-callout b{color:var(--flag);}
+  .fine-print{font-size:.82rem; color:var(--muted); margin-top:18px;}
+
+  .company-popover{position:relative; display:inline-block;}
+  .company-trigger{
+    background:none; border:none; padding:0; margin:0; cursor:pointer;
+    font:inherit; color:inherit;
+    text-decoration:underline; text-decoration-color:var(--resolved); text-decoration-thickness:1px;
+  }
+  .company-trigger:hover, .company-trigger:focus{color:var(--flag); text-decoration-color:var(--flag);}
+  .popover-card{
+    position:fixed; left:0; top:0;
+    width:250px; background:var(--ink); color:var(--paper);
+    font-family:'Work Sans',sans-serif; font-size:.8rem; line-height:1.55;
+    padding:14px 16px; border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,0.3);
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .15s ease;
+    z-index:500; text-align:left;
+  }
+  .popover-card.open{opacity:1; visibility:visible; pointer-events:auto;}
+  .popover-text{display:block;}
+  .popover-link{
+    display:inline-block; margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:.72rem;
+    color:#9fd8b8; text-decoration:underline;
+  }
+  .popover-link:hover{color:#c3ecd8;}
+  @media (max-width:480px){
+    .popover-card{width:80vw; max-width:250px;}
+  }
+
+  .star-rating{display:flex; gap:6px;}
+  .star{
+    background:none; border:none; cursor:pointer; padding:0;
+    font-size:1.8rem; line-height:1; color:#c3ccbc; transition:color .1s ease, transform .1s ease;
+  }
+  .star:hover{transform:scale(1.12);}
+  .star.selected{color:var(--flag);}
+
+  .field-row textarea{
+    width:100%; padding:12px 14px; border:1.5px solid #c3ccbc; border-radius:8px;
+    font-family:'Work Sans',sans-serif; font-size:1rem; color:var(--ink); background:var(--paper);
+    resize:vertical;
+  }
+  .field-row textarea:focus{outline:none; border-color:var(--resolved);}
+
+  footer{padding:48px 0 32px; margin-top:20px; background:var(--ink); color:var(--paper);}
+  .footer-grid{display:grid; grid-template-columns:1.3fr 1fr 1.3fr; gap:32px;}
+  .footer-heading{font-family:'JetBrains Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:#9fd8b8; margin-bottom:12px;}
+  .footer-text{font-size:.86rem; color:#c7cfc3; line-height:1.6; margin:0;}
+  .footer-link{display:block; font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--paper); text-decoration:none; margin-bottom:10px;}
+  .footer-link:hover{color:#9fd8b8; text-decoration:underline;}
+  .footer-bottom{
+    margin-top:36px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.12);
+    text-align:center;
+  }
+  .footer-bottom p{margin:0; font-family:'JetBrains Mono',monospace; font-size:.74rem; color:#8a9793;}
+  footer .company-trigger{color:#9fd8b8;}
+  footer .company-trigger:hover{color:var(--flag);}
+
+  @media (max-width:600px){
+    .two-col, .results-grid, .how-it-works .pillars, .footer-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:1.7rem;}
+    .calc-card{padding:22px;}
+    .result-card.savings{grid-column:auto;}
+    .footer-grid{gap:26px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="wrap">
+    <a href="https://sylvia-portfolio-mauve.vercel.app/" class="nav-btn nav-btn-ghost">&larr; Back to portfolio</a>
+    <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="nav-btn nav-btn-primary">Book a 30-minute chat &rarr;</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Free tool</div>
+    <h1 style="margin-top:10px;">Cost of Quality Calculator</h1>
+    <p>Most operations only see one slice of what quality actually costs them: the scrap and rework. This tool uses the full <span class="company-popover"><button type="button" class="company-trigger">ASQ</button><span class="popover-card" role="tooltip"><span class="popover-text">The American Society for Quality (ASQ) is a global professional association for quality management. It publishes widely used standards and resources, including the Cost of Quality framework this tool is built on.</span><a href="https://asq.org/quality-resources/cost-of-quality" target="_blank" rel="noopener" class="popover-link">Visit site &rarr;</a></span></span> Prevention-Appraisal-Failure model to show the real picture.</p>
+    <div class="by-line">A free tool by <a href="https://sylvia-portfolio-mauve.vercel.app/" target="_blank" rel="noopener">Sylvia Wanjiru Opiyo</a>, Operational Excellence &amp; Quality Leader.</div>
+
+    <div class="framework-note">
+      <p><b>The framework:</b> Cost of Quality (COQ) is split into four categories: <b>Prevention</b> (planning, training, supplier development), <b>Appraisal</b> (inspection, testing, QC staff), <b>Internal Failure</b> (scrap, rework caught before shipping), and <b>External Failure</b> (warranty claims, returns, recalls). Internal and External Failure together are the "Cost of Poor Quality." That's what you're actually losing, as opposed to what you're investing to prevent losses.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="calc-card">
+      <h2>Quick estimate</h2>
+      <div class="calc-subhead">Internal failure cost: scrap and rework caught before your product ships.</div>
+
+      <div class="field-row">
+        <label for="currencySearch">Currency</label>
+        <div class="currency-combo" id="currencyCombo">
+          <input type="text" id="currencySearch" autocomplete="off" placeholder="Search currency (e.g. USD, Kenya, Euro)&hellip;">
+          <input type="hidden" id="currency" value="USD">
+          <div class="currency-options" id="currencyOptions"></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <label for="units">Units produced per month</label>
+          <input type="number" id="units" placeholder="e.g. 5000" min="0">
+        </div>
+        <div class="field-row">
+          <label for="costPerUnit">Cost per defective unit</label>
+          <input type="number" id="costPerUnit" placeholder="e.g. 40" min="0">
+          <div class="field-hint">Rework, scrap, or replacement cost per unit.</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <label for="currentRate">Current defect / rework rate (%)</label>
+          <input type="number" id="currentRate" placeholder="e.g. 12" min="0" max="100" step="0.1">
+        </div>
+        <div class="field-row">
+          <label for="targetRate">Target defect rate (%)</label>
+          <input type="number" id="targetRate" placeholder="e.g. 3" min="0" max="100" step="0.1">
+        </div>
+      </div>
+
+      <div class="unlock-prompt">
+        <div class="unlock-prompt-text">
+          <strong>This is only the internal failure slice.</strong>
+          <span>Add appraisal, prevention, and external failure costs to see your full Cost of Quality, and get a tailored read on what to fix first.</span>
+        </div>
+        <button type="button" class="unlock-btn" id="toggleDetail">Show full picture &rarr;</button>
+      </div>
+
+      <div class="detail-section" id="detailSection">
+        <div class="detail-inner">
+
+          <div class="category-label">Appraisal costs</div>
+          <div class="two-col">
+            <div class="field-row">
+              <label for="qcStaff">Number of QC / inspection staff</label>
+              <input type="number" id="qcStaff" placeholder="e.g. 4" min="0">
+            </div>
+            <div class="field-row">
+              <label for="qcSalary">Average monthly salary per QC staff</label>
+              <input type="number" id="qcSalary" placeholder="e.g. 500" min="0">
+            </div>
+          </div>
+          <div class="field-row">
+            <label for="otherAppraisal">Other annual appraisal costs</label>
+            <input type="number" id="otherAppraisal" placeholder="e.g. 8000" min="0">
+            <div class="field-hint">Testing equipment, incoming inspection, supplier audits.</div>
+          </div>
+
+          <div class="category-label" style="margin-top:8px;">Prevention costs</div>
+          <div class="field-row">
+            <label for="prevention">Annual prevention spend</label>
+            <input type="number" id="prevention" placeholder="e.g. 12000" min="0">
+            <div class="field-hint">Training, quality planning, preventive maintenance, supplier development.</div>
+          </div>
+
+          <div class="category-label" style="margin-top:8px;">External failure costs</div>
+          <div class="field-row">
+            <label for="externalFailure">Annual external failure cost</label>
+            <input type="number" id="externalFailure" placeholder="e.g. 25000" min="0">
+            <div class="field-hint">Warranty claims, returns, recalls, complaint handling.</div>
+          </div>
+
+          <div class="category-label" style="margin-top:8px;">For benchmarking (optional)</div>
+          <div class="field-row">
+            <label for="revenue">Annual revenue</label>
+            <input type="number" id="revenue" placeholder="e.g. 2000000" min="0">
+            <div class="field-hint">Used only to compare your Cost of Quality against industry benchmarks below.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="results" id="results" style="display:none;">
+        <div class="results-grid">
+          <div class="result-card current">
+            <div class="lbl">Internal failure, current rate</div>
+            <div class="val" id="currentCost">-</div>
+          </div>
+          <div class="result-card">
+            <div class="lbl">Internal failure, at target rate</div>
+            <div class="val" id="targetCost">-</div>
+          </div>
+          <div class="result-card savings">
+            <div class="lbl">Estimated annual savings if you close this gap</div>
+            <div class="val" id="savings">-</div>
+          </div>
+        </div>
+
+        <div class="coq-breakdown" id="coqBreakdown" style="display:none;">
+          <div class="coq-group">
+            <div class="group-title">Investing in quality</div>
+            <div class="coq-row"><span>Prevention</span><span class="amt" id="preventionVal">-</span></div>
+            <div class="coq-row"><span>Appraisal</span><span class="amt" id="appraisalVal">-</span></div>
+          </div>
+          <div class="coq-group">
+            <div class="group-title">Cost of poor quality</div>
+            <div class="coq-row"><span>Internal failure</span><span class="amt" id="internalVal">-</span></div>
+            <div class="coq-row"><span>External failure</span><span class="amt" id="externalVal">-</span></div>
+          </div>
+          <div class="coq-total">
+            <span class="lbl">Total Cost of Quality (annual)</span>
+            <span class="val" id="totalCOQ">-</span>
+          </div>
+
+          <div class="benchmark" id="benchmarkBlock" style="display:none;">
+            <div class="lbl">Your Cost of Quality as a share of revenue, against ASQ benchmarks</div>
+            <div class="benchmark-bar">
+              <div class="seg seg-worldclass">&lt;5% world-class</div>
+              <div class="seg seg-typical">10 to 20% typical</div>
+              <div class="seg seg-struggling">~40% struggling</div>
+              <div class="benchmark-marker" id="benchmarkMarker" data-label=""></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dynamic-insight" id="nowWhatSection" style="display:none;">
+          <div class="dynamic-insight-label">What this number actually tells you</div>
+          <h3 id="insightTitle"></h3>
+          <p id="insightBody"></p>
+        </div>
+
+        <div class="rule-callout" id="ruleCallout">
+          Rule of thumb from decades of quality-cost research: a dollar spent on <b>prevention</b> typically saves about $10 in internal failure costs and $100 in external failure costs once a defect reaches the customer.
+        </div>
+
+        <div class="proof-note">
+          <p>Closing a gap like this is exactly the kind of problem behind the numbers on my portfolio, including a supplier program that took scrap from 60% to 0% and a compliance system that took an operation from 46% to 83%. <a href="https://sylvia-portfolio-mauve.vercel.app/#project-supplier" target="_blank" rel="noopener">See how that happened &rarr;</a></p>
+        </div>
+
+        <div class="cta-row">
+          <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="btn btn-primary" target="_blank" rel="noopener">Book a 30-minute chat &rarr;</a>
+          <a href="https://sylvia-portfolio-mauve.vercel.app/" class="btn btn-ghost" target="_blank" rel="noopener">See the full portfolio</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-it-works" style="margin-top:44px;">
+      <h2>The four categories, explained</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <h3>Prevention</h3>
+          <p>Money spent before anything goes wrong: training, quality planning, supplier development, preventive maintenance.</p>
+        </div>
+        <div class="pillar">
+          <h3>Appraisal</h3>
+          <p>The cost of checking: QC staff salaries, inspection, testing, audits.</p>
+        </div>
+        <div class="pillar">
+          <h3>Internal failure</h3>
+          <p>Defects caught before shipping: scrap, rework, downtime, re-inspection.</p>
+        </div>
+        <div class="pillar">
+          <h3>External failure</h3>
+          <p>Defects the customer finds: warranty claims, returns, recalls, lost trust.</p>
+        </div>
+      </div>
+      <p class="fine-print">This is a directional estimate, not an audit. Real Cost of Quality work usually needs finance and operations data pulled together over a full quarter to be precise. This tool exists to make the scale of the problem visible, not to replace that process.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="calc-card">
+      <h2>Was this useful?</h2>
+      <div class="calc-subhead">Rate it, critique it, or tell me what would make it better. It goes straight to my inbox.</div>
+
+      <div class="field-row">
+        <label>Rating</label>
+        <div class="star-rating" id="starRating">
+          <button type="button" class="star" data-value="1">&#9733;</button>
+          <button type="button" class="star" data-value="2">&#9733;</button>
+          <button type="button" class="star" data-value="3">&#9733;</button>
+          <button type="button" class="star" data-value="4">&#9733;</button>
+          <button type="button" class="star" data-value="5">&#9733;</button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label for="reviewerName">Name (optional)</label>
+        <input type="text" id="reviewerName" placeholder="Your name">
+      </div>
+
+      <div class="field-row">
+        <label for="reviewText">Your feedback</label>
+        <textarea id="reviewText" rows="4" placeholder="What worked, what was confusing, what's missing&hellip;"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="submitReview">Send feedback &rarr;</button>
+      <div class="fine-print" style="margin-top:14px;">This opens your email app with everything pre-filled. Nothing is stored automatically, but this is not an anonymous form: since it sends from your own email account, your email address will be visible to Sylvia. Leave the name field blank if you'd rather stay unnamed in the message itself.</div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div class="footer-col">
+        <div class="footer-heading">Sylvia Wanjiru Opiyo</div>
+        <p class="footer-text">Operational Excellence and Quality Leader, building supplier partnerships, quality systems, and free tools like this one alongside client work.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">More from Sylvia</div>
+        <a href="https://sylvia-portfolio-mauve.vercel.app/" class="footer-link" target="_blank" rel="noopener">Full portfolio</a>
+        <a href="https://sylvia-portfolio-mauve.vercel.app/#contact" class="footer-link" target="_blank" rel="noopener">Book a 30-minute chat</a>
+        <a href="https://www.linkedin.com/in/sylvia-wanjiru-opiyo" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">This tool</div>
+        <p class="footer-text">Built on the <span class="company-popover"><button type="button" class="company-trigger">ASQ</button><span class="popover-card" role="tooltip"><span class="popover-text">The American Society for Quality (ASQ) is a global professional association for quality management. It publishes widely used standards and resources, including the Cost of Quality framework this tool is built on.</span><a href="https://asq.org/quality-resources/cost-of-quality" target="_blank" rel="noopener" class="popover-link">Visit site &rarr;</a></span></span> Prevention-Appraisal-Failure model. More free tools are on the way, including a Supplier Qualification Framework.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Sylvia Wanjiru Opiyo</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Near-complete list of active ISO 4217 currencies, so this tool works
+  // for visitors anywhere in the world, not just a handful of markets.
+  const CURRENCIES = [
+    {code:"USD",name:"US Dollar"},{code:"EUR",name:"Euro"},{code:"GBP",name:"British Pound"},
+    {code:"KES",name:"Kenyan Shilling"},{code:"UGX",name:"Ugandan Shilling"},{code:"TZS",name:"Tanzanian Shilling"},
+    {code:"ETB",name:"Ethiopian Birr"},{code:"NGN",name:"Nigerian Naira"},{code:"ZAR",name:"South African Rand"},
+    {code:"GHS",name:"Ghanaian Cedi"},{code:"EGP",name:"Egyptian Pound"},{code:"MAD",name:"Moroccan Dirham"},
+    {code:"DZD",name:"Algerian Dinar"},{code:"TND",name:"Tunisian Dinar"},{code:"XOF",name:"West African CFA Franc"},
+    {code:"XAF",name:"Central African CFA Franc"},{code:"RWF",name:"Rwandan Franc"},{code:"BIF",name:"Burundian Franc"},
+    {code:"CDF",name:"Congolese Franc"},{code:"ZMW",name:"Zambian Kwacha"},{code:"MWK",name:"Malawian Kwacha"},
+    {code:"MZN",name:"Mozambican Metical"},{code:"NAD",name:"Namibian Dollar"},{code:"BWP",name:"Botswana Pula"},
+    {code:"SZL",name:"Eswatini Lilangeni"},{code:"LSL",name:"Lesotho Loti"},{code:"AOA",name:"Angolan Kwanza"},
+    {code:"MGA",name:"Malagasy Ariary"},{code:"SCR",name:"Seychellois Rupee"},{code:"MUR",name:"Mauritian Rupee"},
+    {code:"SLE",name:"Sierra Leonean Leone"},{code:"LRD",name:"Liberian Dollar"},{code:"GMD",name:"Gambian Dalasi"},
+    {code:"GNF",name:"Guinean Franc"},{code:"CVE",name:"Cape Verdean Escudo"},{code:"STN",name:"São Tomé & Príncipe Dobra"},
+    {code:"KMF",name:"Comorian Franc"},{code:"DJF",name:"Djiboutian Franc"},{code:"ERN",name:"Eritrean Nakfa"},
+    {code:"SOS",name:"Somali Shilling"},{code:"SSP",name:"South Sudanese Pound"},{code:"SDG",name:"Sudanese Pound"},
+    {code:"LYD",name:"Libyan Dinar"},
+    {code:"CAD",name:"Canadian Dollar"},{code:"MXN",name:"Mexican Peso"},{code:"BRL",name:"Brazilian Real"},
+    {code:"ARS",name:"Argentine Peso"},{code:"CLP",name:"Chilean Peso"},{code:"COP",name:"Colombian Peso"},
+    {code:"PEN",name:"Peruvian Sol"},{code:"UYU",name:"Uruguayan Peso"},{code:"BOB",name:"Bolivian Boliviano"},
+    {code:"PYG",name:"Paraguayan Guarani"},{code:"VES",name:"Venezuelan Bolívar"},{code:"GTQ",name:"Guatemalan Quetzal"},
+    {code:"HNL",name:"Honduran Lempira"},{code:"NIO",name:"Nicaraguan Córdoba"},{code:"CRC",name:"Costa Rican Colón"},
+    {code:"PAB",name:"Panamanian Balboa"},{code:"DOP",name:"Dominican Peso"},{code:"CUP",name:"Cuban Peso"},
+    {code:"JMD",name:"Jamaican Dollar"},{code:"TTD",name:"Trinidad & Tobago Dollar"},{code:"BSD",name:"Bahamian Dollar"},
+    {code:"BBD",name:"Barbadian Dollar"},{code:"BZD",name:"Belize Dollar"},{code:"XCD",name:"East Caribbean Dollar"},
+    {code:"GYD",name:"Guyanese Dollar"},{code:"SRD",name:"Surinamese Dollar"},{code:"HTG",name:"Haitian Gourde"},
+    {code:"CHF",name:"Swiss Franc"},{code:"SEK",name:"Swedish Krona"},{code:"NOK",name:"Norwegian Krone"},
+    {code:"DKK",name:"Danish Krone"},{code:"ISK",name:"Icelandic Krona"},{code:"PLN",name:"Polish Zloty"},
+    {code:"CZK",name:"Czech Koruna"},{code:"HUF",name:"Hungarian Forint"},{code:"RON",name:"Romanian Leu"},
+    {code:"BGN",name:"Bulgarian Lev"},{code:"RSD",name:"Serbian Dinar"},{code:"MKD",name:"Macedonian Denar"},
+    {code:"BAM",name:"Bosnia-Herzegovina Mark"},{code:"ALL",name:"Albanian Lek"},{code:"UAH",name:"Ukrainian Hryvnia"},
+    {code:"RUB",name:"Russian Ruble"},{code:"BYN",name:"Belarusian Ruble"},{code:"MDL",name:"Moldovan Leu"},
+    {code:"GEL",name:"Georgian Lari"},{code:"AMD",name:"Armenian Dram"},{code:"AZN",name:"Azerbaijani Manat"},
+    {code:"TRY",name:"Turkish Lira"},
+    {code:"CNY",name:"Chinese Yuan"},{code:"JPY",name:"Japanese Yen"},{code:"KRW",name:"South Korean Won"},
+    {code:"INR",name:"Indian Rupee"},{code:"PKR",name:"Pakistani Rupee"},{code:"BDT",name:"Bangladeshi Taka"},
+    {code:"LKR",name:"Sri Lankan Rupee"},{code:"NPR",name:"Nepalese Rupee"},{code:"BTN",name:"Bhutanese Ngultrum"},
+    {code:"MMK",name:"Myanmar Kyat"},{code:"THB",name:"Thai Baht"},{code:"VND",name:"Vietnamese Dong"},
+    {code:"KHR",name:"Cambodian Riel"},{code:"LAK",name:"Laotian Kip"},{code:"IDR",name:"Indonesian Rupiah"},
+    {code:"MYR",name:"Malaysian Ringgit"},{code:"SGD",name:"Singapore Dollar"},{code:"PHP",name:"Philippine Peso"},
+    {code:"TWD",name:"Taiwan New Dollar"},{code:"HKD",name:"Hong Kong Dollar"},{code:"MOP",name:"Macanese Pataca"},
+    {code:"MNT",name:"Mongolian Tugrik"},{code:"KZT",name:"Kazakhstani Tenge"},{code:"UZS",name:"Uzbekistani Som"},
+    {code:"KGS",name:"Kyrgystani Som"},{code:"TJS",name:"Tajikistani Somoni"},{code:"TMT",name:"Turkmenistani Manat"},
+    {code:"AFN",name:"Afghan Afghani"},{code:"MVR",name:"Maldivian Rufiyaa"},
+    {code:"AED",name:"UAE Dirham"},{code:"SAR",name:"Saudi Riyal"},{code:"QAR",name:"Qatari Rial"},
+    {code:"KWD",name:"Kuwaiti Dinar"},{code:"BHD",name:"Bahraini Dinar"},{code:"OMR",name:"Omani Rial"},
+    {code:"JOD",name:"Jordanian Dinar"},{code:"ILS",name:"Israeli New Shekel"},{code:"LBP",name:"Lebanese Pound"},
+    {code:"SYP",name:"Syrian Pound"},{code:"IQD",name:"Iraqi Dinar"},{code:"IRR",name:"Iranian Rial"},
+    {code:"YER",name:"Yemeni Rial"},
+    {code:"AUD",name:"Australian Dollar"},{code:"NZD",name:"New Zealand Dollar"},{code:"FJD",name:"Fijian Dollar"},
+    {code:"PGK",name:"Papua New Guinean Kina"},{code:"SBD",name:"Solomon Islands Dollar"},{code:"TOP",name:"Tongan Paʻanga"},
+    {code:"VUV",name:"Vanuatu Vatu"},{code:"WST",name:"Samoan Tala"},{code:"BMD",name:"Bermudian Dollar"},
+    {code:"BND",name:"Brunei Dollar"},{code:"ZWL",name:"Zimbabwean Dollar"}
+  ];
+
+  const currencyInput = document.getElementById('currency');
+  const currencySearch = document.getElementById('currencySearch');
+  const currencyOptionsEl = document.getElementById('currencyOptions');
+  let highlightedIndex = -1;
+  let currentMatches = [];
+
+  function renderCurrencyOptions(filterText){
+    const f = filterText.trim().toLowerCase();
+    currentMatches = f === ''
+      ? CURRENCIES
+      : CURRENCIES.filter(c => c.code.toLowerCase().includes(f) || c.name.toLowerCase().includes(f));
+    highlightedIndex = -1;
+
+    if(currentMatches.length === 0){
+      currencyOptionsEl.innerHTML = '<div class="no-match">No matching currency</div>';
+      return;
+    }
+    currencyOptionsEl.innerHTML = currentMatches.map((c, i) =>
+      `<div class="currency-option" data-index="${i}" data-code="${c.code}" data-name="${c.name.replace(/"/g,'&quot;')}">` +
+      `<span class="code">${c.code}</span><span class="name">${c.name}</span></div>`
+    ).join('');
+  }
+
+  function selectCurrency(code, name){
+    currencyInput.value = code;
+    currencySearch.value = code + ' - ' + name;
+    currencyOptionsEl.classList.remove('open');
+    calculate();
+  }
+
+  function openCurrencyDropdown(){
+    renderCurrencyOptions('');
+    currencyOptionsEl.classList.add('open');
+    currencySearch.select();
+  }
+
+  currencySearch.addEventListener('focus', openCurrencyDropdown);
+  currencySearch.addEventListener('input', ()=>{
+    renderCurrencyOptions(currencySearch.value);
+    currencyOptionsEl.classList.add('open');
+  });
+
+  currencyOptionsEl.addEventListener('click', (e)=>{
+    const opt = e.target.closest('.currency-option');
+    if(!opt) return;
+    selectCurrency(opt.dataset.code, opt.dataset.name);
+  });
+
+  currencySearch.addEventListener('keydown', (e)=>{
+    const items = currencyOptionsEl.querySelectorAll('.currency-option');
+    if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      highlightedIndex = Math.min(highlightedIndex + 1, items.length - 1);
+      items.forEach((el,i)=>el.classList.toggle('highlighted', i === highlightedIndex));
+      if(items[highlightedIndex]) items[highlightedIndex].scrollIntoView({block:'nearest'});
+    } else if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      highlightedIndex = Math.max(highlightedIndex - 1, 0);
+      items.forEach((el,i)=>el.classList.toggle('highlighted', i === highlightedIndex));
+      if(items[highlightedIndex]) items[highlightedIndex].scrollIntoView({block:'nearest'});
+    } else if(e.key === 'Enter'){
+      e.preventDefault();
+      if(highlightedIndex >= 0 && currentMatches[highlightedIndex]){
+        const c = currentMatches[highlightedIndex];
+        selectCurrency(c.code, c.name);
+      }
+    } else if(e.key === 'Escape'){
+      currencyOptionsEl.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('#currencyCombo')){
+      currencyOptionsEl.classList.remove('open');
+    }
+  });
+
+  // Default selection on load
+  currencySearch.value = 'USD - US Dollar';
+
+  function formatNumber(n){
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  const toggleBtn = document.getElementById('toggleDetail');
+  const detailSection = document.getElementById('detailSection');
+  toggleBtn.addEventListener('click', ()=>{
+    const isOpen = detailSection.classList.toggle('open');
+    toggleBtn.textContent = isOpen
+      ? 'Hide full breakdown'
+      : 'Show full picture \u2192';
+    calculate();
+  });
+
+  function calculate(){
+    const currency = document.getElementById('currency').value;
+    const units = parseFloat(document.getElementById('units').value);
+    const costPerUnit = parseFloat(document.getElementById('costPerUnit').value);
+    const currentRate = parseFloat(document.getElementById('currentRate').value);
+    const targetRate = parseFloat(document.getElementById('targetRate').value);
+
+    const resultsEl = document.getElementById('results');
+
+    const hasEnoughInput = [units, costPerUnit, currentRate].every(v => !isNaN(v) && v >= 0);
+    if(!hasEnoughInput){
+      resultsEl.style.display = 'none';
+      return;
+    }
+
+    const monthlyDefectiveCurrent = units * (currentRate / 100);
+    const internalFailureCurrent = monthlyDefectiveCurrent * costPerUnit * 12;
+
+    let internalFailureTarget = null;
+    let savings = null;
+    if(!isNaN(targetRate) && targetRate >= 0){
+      const monthlyDefectiveTarget = units * (targetRate / 100);
+      internalFailureTarget = monthlyDefectiveTarget * costPerUnit * 12;
+      savings = internalFailureCurrent - internalFailureTarget;
+    }
+
+    document.getElementById('currentCost').textContent = currency + ' ' + formatNumber(internalFailureCurrent);
+    document.getElementById('targetCost').textContent = internalFailureTarget !== null ? (currency + ' ' + formatNumber(internalFailureTarget)) : '\u2014 (add a target rate)';
+    document.getElementById('savings').textContent = savings !== null ? (currency + ' ' + formatNumber(savings)) : '\u2014 (add a target rate)';
+
+    resultsEl.style.display = 'block';
+
+    // Detailed PAF breakdown, only shown once the detail section is open
+    const coqBreakdown = document.getElementById('coqBreakdown');
+    if(detailSection.classList.contains('open')){
+      const qcStaff = parseFloat(document.getElementById('qcStaff').value) || 0;
+      const qcSalary = parseFloat(document.getElementById('qcSalary').value) || 0;
+      const otherAppraisal = parseFloat(document.getElementById('otherAppraisal').value) || 0;
+      const prevention = parseFloat(document.getElementById('prevention').value) || 0;
+      const externalFailure = parseFloat(document.getElementById('externalFailure').value) || 0;
+      const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+
+      const appraisal = (qcStaff * qcSalary * 12) + otherAppraisal;
+      const internal = internalFailureCurrent;
+      const totalCOQ = prevention + appraisal + internal + externalFailure;
+
+      document.getElementById('preventionVal').textContent = currency + ' ' + formatNumber(prevention);
+      document.getElementById('appraisalVal').textContent = currency + ' ' + formatNumber(appraisal);
+      document.getElementById('internalVal').textContent = currency + ' ' + formatNumber(internal);
+      document.getElementById('externalVal').textContent = currency + ' ' + formatNumber(externalFailure);
+      document.getElementById('totalCOQ').textContent = currency + ' ' + formatNumber(totalCOQ);
+
+      const benchmarkBlock = document.getElementById('benchmarkBlock');
+      if(revenue > 0){
+        const pct = (totalCOQ / revenue) * 100;
+        const marker = document.getElementById('benchmarkMarker');
+        // Bar spans 0-40%+ mapped across its full width (5% : 15% : 20% flex ratio above)
+        const clampedPct = Math.min(pct, 45);
+        const leftPercent = (clampedPct / 45) * 100;
+        marker.style.left = leftPercent + '%';
+        marker.setAttribute('data-label', pct.toFixed(1) + '%');
+        benchmarkBlock.style.display = 'block';
+      } else {
+        benchmarkBlock.style.display = 'none';
+      }
+
+      coqBreakdown.style.display = 'block';
+    } else {
+      coqBreakdown.style.display = 'none';
+    }
+
+    updateDynamicInsight(internalFailureCurrent);
+  }
+
+  function updateDynamicInsight(internalFailureCurrent){
+    const nowWhatSection = document.getElementById('nowWhatSection');
+    const titleEl = document.getElementById('insightTitle');
+    const bodyEl = document.getElementById('insightBody');
+
+    if(!detailSection.classList.contains('open')){
+      // Quick mode only: no appraisal/prevention/external data yet
+      titleEl.textContent = "This is only the visible slice";
+      bodyEl.innerHTML = "The number above is just <strong>internal failure</strong>, what you catch before shipping. It doesn't yet count QC labor, prevention spend, or what happens when a defect reaches a customer. Open the full breakdown above to get a tailored read on what to fix first.";
+      nowWhatSection.style.display = 'block';
+      return;
+    }
+
+    const qcStaff = parseFloat(document.getElementById('qcStaff').value) || 0;
+    const qcSalary = parseFloat(document.getElementById('qcSalary').value) || 0;
+    const otherAppraisal = parseFloat(document.getElementById('otherAppraisal').value) || 0;
+    const prevention = parseFloat(document.getElementById('prevention').value) || 0;
+    const externalFailure = parseFloat(document.getElementById('externalFailure').value) || 0;
+    const appraisal = (qcStaff * qcSalary * 12) + otherAppraisal;
+    const totalInvestment = prevention + appraisal;
+    const totalFailure = internalFailureCurrent + externalFailure;
+
+    if(totalInvestment === 0 && totalFailure === 0){
+      titleEl.textContent = "Add a few more numbers above";
+      bodyEl.innerHTML = "Fill in at least one of appraisal, prevention, or external failure costs to get a <strong>tailored read</strong> on what your numbers mean.";
+    } else if(totalInvestment === 0 || totalFailure > totalInvestment * 3){
+      titleEl.textContent = "You're running quality by putting out fires";
+      bodyEl.innerHTML = "<strong>Failure costs are dwarfing what you invest in prevention.</strong> The same few defects are likely resurfacing while QC catches them again and again. Start with <strong>root-cause analysis on your two or three most repeated failures</strong>; that beats adding more inspection.";
+    } else if(appraisal > prevention * 2 && totalFailure > totalInvestment * 0.5){
+      titleEl.textContent = "You're catching defects, not preventing them";
+      bodyEl.innerHTML = "<strong>Appraisal spend is high relative to prevention</strong>, and failure costs are still significant. <strong>Shift some of that budget upstream</strong>, into supplier qualification or process control; it usually cuts failure costs faster than more inspection does.";
+    } else {
+      titleEl.textContent = "Your system looks reasonably mature";
+      bodyEl.innerHTML = "Prevention and appraisal spend already <strong>roughly matches your failure costs</strong>. The next gain is likely smaller and more specific: <strong>tightening one process or one supplier relationship</strong>, not a system-wide fix.";
+    }
+
+    nowWhatSection.style.display = 'block';
+  }
+
+  [
+    'currency','units','costPerUnit','currentRate','targetRate',
+    'qcStaff','qcSalary','otherAppraisal','prevention','externalFailure','revenue'
+  ].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+
+  // Number inputs natively treat mouse-wheel scroll as spinning the value
+  // up or down while focused. That means anyone who types a number and
+  // then scrolls the page with their cursor still over the field can have
+  // it silently change underneath them. Blurring the field on wheel stops
+  // that, while letting the page keep scrolling normally right through it.
+  document.querySelectorAll('input[type="number"]').forEach(input=>{
+    input.addEventListener('wheel', ()=>{ input.blur(); });
+  });
+
+  // ASQ reference popover: hover to preview, tap to toggle on mobile,
+  // positioned via JS with position:fixed so it can't get clipped by
+  // any parent's overflow, and flips below the trigger if there isn't
+  // room above it.
+  function positionPopover(btn, card){
+    const rect = btn.getBoundingClientRect();
+    const gap = 10;
+    const cardWidth = card.offsetWidth || 250;
+    const cardHeight = card.offsetHeight || 90;
+
+    let left = rect.left + (rect.width / 2) - (cardWidth / 2);
+    left = Math.max(12, Math.min(left, window.innerWidth - cardWidth - 12));
+
+    const spaceAbove = rect.top;
+    const placeBelow = spaceAbove < (cardHeight + gap + 12);
+    const top = placeBelow ? (rect.bottom + gap) : (rect.top - cardHeight - gap);
+
+    card.style.left = left + 'px';
+    card.style.top = top + 'px';
+  }
+
+  document.querySelectorAll('.company-trigger').forEach(btn=>{
+    const card = btn.nextElementSibling;
+    let closeTimer = null;
+
+    function openCard(){
+      if(closeTimer){ clearTimeout(closeTimer); closeTimer = null; }
+      document.querySelectorAll('.popover-card.open').forEach(c=>{ if(c!==card) c.classList.remove('open'); });
+      card.classList.add('open');
+      positionPopover(btn, card);
+    }
+    function closeCardNow(){ card.classList.remove('open'); }
+    function scheduleClose(){
+      if(closeTimer){ clearTimeout(closeTimer); }
+      closeTimer = setTimeout(closeCardNow, 200);
+    }
+
+    btn.addEventListener('mouseenter', openCard);
+    btn.addEventListener('mouseleave', scheduleClose);
+    btn.addEventListener('focus', openCard);
+    btn.addEventListener('blur', scheduleClose);
+    card.addEventListener('mouseenter', openCard);
+    card.addEventListener('mouseleave', scheduleClose);
+
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      card.classList.contains('open') ? closeCardNow() : openCard();
+    });
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.company-popover')){
+      document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
+    }
+  });
+  window.addEventListener('scroll', ()=>{
+    document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
+  }, { passive: true });
+  window.addEventListener('resize', ()=>{
+    document.querySelectorAll('.popover-card.open').forEach(c=>c.classList.remove('open'));
+  });
+
+  // Star rating: click a star to select that rating (and everything up to it)
+  let selectedRating = 0;
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(star=>{
+    star.addEventListener('click', ()=>{
+      selectedRating = parseInt(star.dataset.value, 10);
+      stars.forEach(s=>{
+        s.classList.toggle('selected', parseInt(s.dataset.value, 10) <= selectedRating);
+      });
+    });
+  });
+
+  // Feedback goes out as a pre-filled email. No backend, no data stored
+  // anywhere; it only sends if the visitor actually hits send in their
+  // own email app.
+  document.getElementById('submitReview').addEventListener('click', ()=>{
+    const name = document.getElementById('reviewerName').value.trim() || 'Anonymous';
+    const text = document.getElementById('reviewText').value.trim();
+    const ratingText = selectedRating > 0 ? (selectedRating + ' / 5 stars') : 'Not rated';
+
+    if(!text && selectedRating === 0){
+      alert('Add a rating or a note before sending \u2014 whichever you have time for.');
+      return;
+    }
+
+    const subject = 'Feedback on the Cost of Quality Calculator';
+    const body =
+      'Rating: ' + ratingText + '\\n' +
+      'From: ' + name + '\\n\\n' +
+      'Feedback:\\n' + (text || '(no written feedback)');
+
+    window.location.href = 'mailto:sylvia.o.wanjiru@gmail.com?subject=' +
+      encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  });
+</script>
+
+</body>
+</html>
